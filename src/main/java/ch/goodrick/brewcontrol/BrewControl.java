@@ -79,7 +79,6 @@ public class BrewControl {
 		}
 
 		Mashing.getInstance().setName("Weizen");
-		Mashing.getInstance().addRest(new Rest("Test", 22d, 1, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 1, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
 		Mashing.getInstance().addRest(new Rest("Maltoserast", 62d, 50, Boolean.TRUE));
