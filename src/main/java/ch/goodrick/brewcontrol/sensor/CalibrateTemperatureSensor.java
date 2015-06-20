@@ -10,6 +10,22 @@ public abstract class CalibrateTemperatureSensor {
 	private double delta0 = 0;
 	private double correctionFactor = 1;
 
+	private double tempIceWater;
+	private double tempBoilingWater;
+	private long altitude;
+
+	public double getTempIceWater() {
+		return tempIceWater;
+	}
+
+	public double getTempBoilingWater() {
+		return tempBoilingWater;
+	}
+
+	public long getAltitude() {
+		return altitude;
+	}
+
 	/**
 	 * Rule of the thumb: 1°C less per 300 m
 	 * 
@@ -22,6 +38,9 @@ public abstract class CalibrateTemperatureSensor {
 	}
 
 	public void calibrate(double tempIceWater, double tempBoilingWater, long altitude) {
+		this.altitude = altitude;
+		this.tempBoilingWater = tempBoilingWater;
+		this.tempIceWater = tempIceWater;
 		double delta100 = getExpectedBoilingTemperature(altitude) - tempBoilingWater;
 		delta0 = 0 - tempIceWater;
 		correctionFactor = (delta100 - delta0) / tempBoilingWater;

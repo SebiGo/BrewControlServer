@@ -39,10 +39,8 @@ import com.pi4j.device.piface.impl.PiFaceDevice;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.spi.SpiChannel;
 
-// TODO 3 calibration of sensor
 // TODO 3 websocket & client side rendering
 // TODO 3 UI detect if server is present at all
-// TODO 3 Bug Server URL change
 // TODO 9 config file for parameters
 // TODO 9 save/load recipe
 // TODO 9 actuator for motor
@@ -78,7 +76,7 @@ public class BrewControl {
 			opMode = OperationMode.getModeFromCommandlineOption(argv[0]);
 		}
 
-		Mashing.getInstance().setName("Weizen");
+		Mashing.getInstance().setName("Weizenbier");
 		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 1, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
 		Mashing.getInstance().addRest(new Rest("Maltoserast", 62d, 50, Boolean.TRUE));
@@ -101,12 +99,16 @@ public class BrewControl {
 			Mashing.getInstance().initMashing(new FakeSensor(a), a, new FakeButton(), new VirtualButton());
 			break;
 		case GPIO:
-			Mashing.getInstance().initMashing(new SensorDS18B20(), new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
+			SensorDS18B20 s1 = new SensorDS18B20();
+			s1.calibrate(0.9, 99.25, 434);
+			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
 					new GPIOButton(RaspiPin.GPIO_01));
 			break;
 		case PIFACE:
 			final PiFace piface = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
-			Mashing.getInstance().initMashing(new SensorDS18B20(), new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE),
+			SensorDS18B20 s2 = new SensorDS18B20();
+			s2.calibrate(0.9, 99.25, 434);
+			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE),
 					new VirtualButton(), new PiFaceButton(piface, PiFaceSwitch.S1));
 			break;
 		}

@@ -47,7 +47,7 @@ public class SensorDS18B20 extends CalibrateTemperatureSensor implements Sensor 
 	 */
 	public SensorDS18B20() throws IOException {
 		sensorFile = connectSensor();
-		log.info("Using sensor DS18B20 with ID: " + sensorFile.getName());
+		log.info("Found and using sensor DS18B20 with ID: " + sensorFile.getName());
 		valueFile = deriveValueFile(sensorFile);
 	}
 

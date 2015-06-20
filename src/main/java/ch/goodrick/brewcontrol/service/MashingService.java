@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import ch.goodrick.brewcontrol.mashing.Mashing;
 import ch.goodrick.brewcontrol.mashing.MashingException;
 import ch.goodrick.brewcontrol.mashing.Rest;
+import ch.goodrick.brewcontrol.sensor.SensorDS18B20;
 
 @Path("/mashing")
 public class MashingService {
@@ -40,6 +41,12 @@ public class MashingService {
 		try {
 			MashingVO mash = new MashingVO();
 			mash.setName(Mashing.getInstance().getName());
+			if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
+				SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
+				mash.setAltitude(s.getAltitude());
+				mash.setMeasuredTemperatureBoilingWater(s.getTempBoilingWater());
+				mash.setMeasuredTemperatureIceWater(s.getTempIceWater());
+			}
 			Rest rest = Mashing.getInstance().getFirstRest();
 			while (rest != null) {
 				if (rest.getState() == HEATING || rest.getState() == WAITING_COMPLETE || rest.getState() == ACTIVE) {
@@ -66,6 +73,13 @@ public class MashingService {
 	@Consumes({ "application/json", "application/xml" })
 	public Response saveName(@PathParam("name") String name, MashingVO mashing) {
 		Mashing.getInstance().setName(mashing.getName());
+
+		if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
+			SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
+			// TODO persist this value for the sensor id
+			s.calibrate(mashing.getMeasuredTemperatureIceWater(), mashing.getMeasuredTemperatureBoilingWater(), mashing.getAltitude());
+		}
+
 		return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "POST")
 				.header("Content-Type", "application/json").build();
 	}
