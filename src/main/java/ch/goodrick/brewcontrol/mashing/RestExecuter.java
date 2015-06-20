@@ -105,16 +105,13 @@ public class RestExecuter implements Runnable, SensorListener {
 		// notify listeners that rest is over
 		notifyListeners(rest.getState());
 
-		if (rest.getState().equals(RestState.WAITING_COMPLETE)) {
-			// keep up heating while status is WAITING_COMPLETE
-			while (rest.getState().equals(RestState.WAITING_COMPLETE)) {
-				try {
-					heat();
-				} catch (InterruptedException e) {
-					log.error("Heating adjustment was interrupted!");
-				}
+		// keep up heating while status is WAITING_COMPLETE
+		while (rest.getState().equals(RestState.WAITING_COMPLETE)) {
+			try {
+				heat();
+			} catch (InterruptedException e) {
+				log.error("Heating adjustment was interrupted!");
 			}
-			notifyListeners(rest.getState());
 		}
 
 		clearListeners();
