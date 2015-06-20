@@ -54,21 +54,19 @@ public class RestExecuter implements Runnable, SensorListener {
 
 		// set up temperature adjustment
 		// TODO move to config file
-		temperatureAdjust.put(11, 100); // power!
-		temperatureAdjust.put(10, 80); // reduce heater to 80% at 10
+		temperatureAdjust.put(25, 100); // power!
+		temperatureAdjust.put(15, 70); // reduce heater to 80% at 10
 										// centiDegrees before
 										// reaching rest temperature
-		temperatureAdjust.put(5, 75); // reduce heater by 75% at .5°C before
+		temperatureAdjust.put(10, 40); // reduce heater by 75% at .5°C before
 										// reaching rest temperature
-		temperatureAdjust.put(4, 50); // reduce heater by 50% at .4°C before
+		temperatureAdjust.put(5, 30); // reduce heater by 50% at .4°C before
 										// reaching rest temperature
-		temperatureAdjust.put(3, 30); // reduce heater by 30% at .3°C before
+		temperatureAdjust.put(1, 20); // reduce heater by 20% at .2°C before
 										// reaching rest temperature
-		temperatureAdjust.put(2, 20); // reduce heater by 20% at .2°C before
+		temperatureAdjust.put(0, 10); // reduce heater by 10% at .1°C before
 										// reaching rest temperature
-		temperatureAdjust.put(1, 10); // reduce heater by 10% at .1°C before
-										// reaching rest temperature
-		temperatureAdjust.put(0, 0); // switch off heater on or above rest
+		temperatureAdjust.put(-1, 0); // switch off heater on or above rest
 										// temperature
 	}
 
