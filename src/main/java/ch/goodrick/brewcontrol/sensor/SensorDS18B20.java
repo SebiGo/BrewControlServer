@@ -19,7 +19,7 @@ import ch.goodrick.brewcontrol.common.PhysicalQuantity;
  * @author sebastian@goodrick.ch
  *
  */
-public class SensorDS18B20 implements Sensor {
+public class SensorDS18B20 extends CalibrateTemperatureSensor implements Sensor {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private final File sensorFile;
@@ -71,7 +71,7 @@ public class SensorDS18B20 implements Sensor {
 			if (index < 0) {
 				throw new IOException("Could not read sensor " + getID());
 			}
-			return Integer.parseInt(tmp.substring(index + 2)) / 1000d;
+			return getCalibratedValue(Integer.parseInt(tmp.substring(index + 2)) / 1000d);
 		}
 	}
 
