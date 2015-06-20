@@ -79,10 +79,9 @@ public class BrewControl {
 		}
 
 		Mashing.getInstance().setName("Weizen");
-		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 1, Boolean.FALSE));
-		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
-		Mashing.getInstance().addRest(new Rest("Maltoserast", 62d, 50, Boolean.TRUE));
-		Mashing.getInstance().addRest(new Rest("Verzuckerungsrast", 72d, 25, Boolean.FALSE));
+		Mashing.getInstance().addRest(new Rest("Eiweissrast", 30d, 1, Boolean.FALSE));
+		Mashing.getInstance().addRest(new Rest("Maltoserast", 35d, 50, Boolean.TRUE));
+		Mashing.getInstance().addRest(new Rest("Verzuckerungsrast", 40d, 25, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Abmaischen", 78d, 1, Boolean.FALSE));
 
 		Rest start = Mashing.getInstance().getRest();
@@ -101,12 +100,16 @@ public class BrewControl {
 			Mashing.getInstance().initMashing(new FakeSensor(a), a, new FakeButton(), new VirtualButton());
 			break;
 		case GPIO:
-			Mashing.getInstance().initMashing(new SensorDS18B20(), new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
+			SensorDS18B20 s1 = new SensorDS18B20();
+			s1.calibrate(0.9, 99.25, 434);
+			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
 					new GPIOButton(RaspiPin.GPIO_01));
 			break;
 		case PIFACE:
 			final PiFace piface = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
-			Mashing.getInstance().initMashing(new SensorDS18B20(), new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE),
+			SensorDS18B20 s2 = new SensorDS18B20();
+			s2.calibrate(0.9, 99.25, 434);
+			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE),
 					new VirtualButton(), new PiFaceButton(piface, PiFaceSwitch.S1));
 			break;
 		}

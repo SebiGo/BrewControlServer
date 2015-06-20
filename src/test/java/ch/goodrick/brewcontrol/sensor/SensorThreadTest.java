@@ -44,9 +44,9 @@ public class SensorThreadTest {
 			}
 		}, Double.MAX_VALUE);
 		Thread.sleep(2);
-		assertTrue(temperature < checkListener.iterator().next());
-		assertTrue(temperature < checkAboveListener.iterator().next());
-		assertTrue(temperature < checkBelowListener.iterator().next());
+		assertTrue(temperature <= checkListener.iterator().next());
+		assertTrue(temperature <= checkAboveListener.iterator().next());
+		assertTrue(temperature <= checkBelowListener.iterator().next());
 		st.removeListener(sl);
 		st.clearThresholdListener();
 		checkListener.clear();
