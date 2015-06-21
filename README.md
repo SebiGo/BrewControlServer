@@ -13,11 +13,13 @@ In this repository, you will find the server, that exposes all necessary rest se
 
 ###Get it all up and running
 There are a few steps to get everything up and running:
+
 1. [Prepare hardware](#1-prepare-hardware)
 2. [Prepare operating system](#2-prepare-operating-system)
 3. [Compile or download the server](#3-compile-or-download-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
+
 These steps will be described in the next sections.
 
 #### 1. Prepare hardware
