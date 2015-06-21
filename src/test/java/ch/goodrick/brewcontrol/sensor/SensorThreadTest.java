@@ -37,6 +37,18 @@ public class SensorThreadTest {
 				checkAboveListener.add(value);
 			}
 		}, temperature);
+		st.addListenerAbove(new SensorListener() {
+			@Override
+			public void onSensorEvent(Double value) {
+				checkAboveListener.add(value);
+			}
+		}, temperature);
+		st.addListenerBelow(new SensorListener() {
+			@Override
+			public void onSensorEvent(Double value) {
+				checkBelowListener.add(value);
+			}
+		}, Double.MAX_VALUE);
 		st.addListenerBelow(new SensorListener() {
 			@Override
 			public void onSensorEvent(Double value) {
