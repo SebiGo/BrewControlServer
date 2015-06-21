@@ -105,6 +105,13 @@ public class MashingService {
 	}
 
 	@GET
+	@Path("/terminate")
+	public Response terminateMashing() {
+		Mashing.getInstance().terminate();
+		return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+	}
+
+	@GET
 	@Path("/graph")
 	@Produces("image/png")
 	public Response getGraph() {

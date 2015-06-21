@@ -1,6 +1,8 @@
 package ch.goodrick.brewcontrol.mashing;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.button.Button;
@@ -34,6 +36,7 @@ public class Mashing {
 	private Actuator actuator;
 	private Button[] buttons;
 	private SensorThread tempThread;
+	private List<RestExecuter> threads = new Vector<RestExecuter>();
 
 	public double getCurrentTemperature() {
 		return currentTemperature;
@@ -125,7 +128,7 @@ public class Mashing {
 	 *            mashing process
 	 * @param buttons
 	 *            the buttons used to continue the mashing process
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void initMashing(Sensor sensor, Actuator actuator, Button... buttons) throws IOException {
 		setTemperatureSensor(sensor);
@@ -154,7 +157,7 @@ public class Mashing {
 	 *             if there is a problem with reading the sensor.
 	 */
 	public void startMashing() throws MashingException {
-		
+
 		// check if we were properly initialised
 		if (getTemperatureSensor() == null || getActuator() == null || buttons == null) {
 			throw new MashingException("Mashing is not yet ready for execution, supply sensor, acutator and button");
@@ -183,11 +186,12 @@ public class Mashing {
 		// stop executing after last rest
 		if (rest == null) {
 			active = false;
+			threads.clear();
 			return;
 		}
 
 		// execute the rest
-		(new Thread(new RestExecuter(rest, heater, tempThread, new RestStateChangeListener() {
+		RestExecuter re = new RestExecuter(rest, heater, tempThread, new RestStateChangeListener() {
 			@Override
 			public void onStateChangedEvent(RestState state) {
 				if (state.equals(RestState.WAITING_COMPLETE)) {
@@ -218,7 +222,11 @@ public class Mashing {
 					executeRest(rest.getNextRest(), heater, buttons);
 				}
 			}
-		}))).start();
+		});
+		// remember the restExecuter
+		threads.add(re);
+		// start it
+		new Thread(re).start();
 	}
 
 	/**
@@ -237,5 +245,14 @@ public class Mashing {
 	 */
 	public Rest getRest() {
 		return firstRest;
+	}
+
+	public void terminate() {
+		if (active) {
+			for (RestExecuter re : threads) {
+				re.terminate();
+			}
+		}
+		active = false;
 	}
 }

@@ -29,6 +29,7 @@ public class RestExecuter implements Runnable, SensorListener {
 	private final HashSet<RestStateChangeListener> listener = new HashSet<RestStateChangeListener>();
 	private int timeIntervalInMS = 1000; // TODO move to config file
 	private final double tolerance = 0.3; // tolerance in °C
+	private boolean run = true;
 
 	// first Integer: Delta °C in centidegrees, i.e. 10 = 1°C
 	// second Integer: % of heating time
@@ -90,7 +91,7 @@ public class RestExecuter implements Runnable, SensorListener {
 		// }
 
 		// keep running in three states
-		while (rest.getState().equals(RestState.HEATING) || rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.INACTIVE)) {
+		while (run && (rest.getState().equals(RestState.HEATING) || rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.INACTIVE))) {
 
 			try {
 				setStatus();
@@ -104,7 +105,7 @@ public class RestExecuter implements Runnable, SensorListener {
 		notifyListeners(rest.getState());
 
 		// keep up heating while status is WAITING_COMPLETE
-		while (rest.getState().equals(RestState.WAITING_COMPLETE)) {
+		while (run && rest.getState().equals(RestState.WAITING_COMPLETE)) {
 			try {
 				heat();
 			} catch (InterruptedException e) {
@@ -113,7 +114,11 @@ public class RestExecuter implements Runnable, SensorListener {
 		}
 
 		clearListeners();
-		log.info("Rest " + rest.getName() + " has been finished.");
+		if (run) {
+			log.info("Rest " + rest.getName() + " has been finished.");
+		} else {
+			log.info("Rest " + rest.getName() + " has been forcefully terminated.");
+		}
 	}
 
 	/**
@@ -189,4 +194,7 @@ public class RestExecuter implements Runnable, SensorListener {
 		(new Thread(this)).start();
 	}
 
+	public void terminate() {
+		run = false;
+	}
 }
