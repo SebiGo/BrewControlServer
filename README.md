@@ -72,7 +72,7 @@ Download the source and cd into that directory to build:
 git clone git@github.com:SebastianGoodrick/BrewControlServer.git
 cd BrewControlServer
 mvn package
-scp target/brewcontrol-0.1.0-executable.jar pi@raspberrypi:~/brewcontrol.jar
+scp target/brewcontrol-0.2.0-SNAPSHOT.jar pi@raspberrypi:~/brewcontrol.jar
 ```
 
 #### 4. Launch the server
