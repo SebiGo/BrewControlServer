@@ -1,15 +1,8 @@
-# BrewControlServer
-BrewControl standalone java server
-
-## Continuous integration and code coverage 
-[![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
-[![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
-
-## About BrewControlServer
+# About BrewControlServer
 This software brews beer. Well, it controls the mashing process. You can run it on a Raspberry Pi, connected to a DS18B20 temperature sensor and any relay, preferably a solid state relay. The relay connects to the heating in your mashing kettle.
 In this repository, you will find the server that provides all necessary REST services to control the mashing process. You can find a suitable client in the [BrewControlClient repository][BrewControlClient]. 
 
-## Installation
+# Installation
 
 Perform these tasks in sequence to get everything up and running:
 
@@ -19,7 +12,7 @@ Perform these tasks in sequence to get everything up and running:
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
 
-### 1. Prepare the hardware
+## 1. Prepare the hardware
 
 Before you can start using this software, you need to set up the hardware. You  need:
 * a Raspberry Pi,
@@ -38,7 +31,7 @@ To connect the devices:
 
 See [the pi4j website][pi4j] for a pin layout.
 
-### 2. Prepare the operating system
+## 2. Prepare the operating system
  
 Install the current [Raspbian operating][raspbian] system to an SD card and boot the 
 RaspberryPi. For more information, see the [installation instructions on the Raspberry Pi website][raspinstall].
@@ -72,7 +65,7 @@ Reboot your Raspberry Pi
 sudo reboot
 ```
 
-### 3. Compile or download the server
+## 3. Compile or download the server
 
 Download the source and change into that directory to build.
 ```
@@ -82,7 +75,7 @@ mvn package
 scp target/brewcontrol-0.2.0-SNAPSHOT.jar pi@raspberrypi:~/brewcontrol.jar
 ```
 
-### 4. Launch the server
+## 4. Launch the server
 
 Execute the jar file by running:
  
@@ -183,8 +176,12 @@ sudo chmod 755 /etc/init.d/brewcontrol
 update-rc.d brewcontrol defaults
 ```
 
-## Contact, Support, Bugs, Feature requests
+# Contact, Support, Bugs, Feature requests
 Please use [GitHub Issues][issues] for bugs and feature requests.
+
+# Continuous integration and code coverage 
+[![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
+[![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
 
 [raspberry]: http://raspberrypi.org
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
