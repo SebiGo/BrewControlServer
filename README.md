@@ -11,7 +11,7 @@ Perform these tasks in sequence to get everything up and running:
 3. [Compile or download the server](#3-compile-or-download-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
-6. [Launch the client](#4-launch-the-client)
+6. [Launch the client](#6-launch-the-client)
 
 ## 1. Prepare the hardware
 
