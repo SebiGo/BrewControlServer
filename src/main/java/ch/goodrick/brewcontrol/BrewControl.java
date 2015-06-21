@@ -1,5 +1,6 @@
 package ch.goodrick.brewcontrol;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -54,6 +55,7 @@ import com.pi4j.io.spi.SpiChannel;
  */
 public class BrewControl {
 	static Logger log = LoggerFactory.getLogger(BrewControl.class);
+
 	/**
 	 * The main method for BrewCrontol intended to start the standalone
 	 * BrewControl server
@@ -109,8 +111,8 @@ public class BrewControl {
 			final PiFace piface = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
 			SensorDS18B20 s2 = new SensorDS18B20();
 			s2.calibrate(0.9, 99.25, 434);
-			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE),
-					new VirtualButton(), new PiFaceButton(piface, PiFaceSwitch.S1));
+			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
+					new PiFaceButton(piface, PiFaceSwitch.S1));
 			break;
 		}
 	}
@@ -157,7 +159,7 @@ public class BrewControl {
 			Enumeration<InetAddress> addresses = nic.getInetAddresses();
 			while (addresses.hasMoreElements()) {
 				InetAddress address = (InetAddress) addresses.nextElement();
-				if (!address.isLoopbackAddress() && address.getHostAddress().startsWith("10.")) {
+				if (!address.isLinkLocalAddress() && address instanceof Inet4Address) {
 					return address.getHostAddress();
 				}
 			}
