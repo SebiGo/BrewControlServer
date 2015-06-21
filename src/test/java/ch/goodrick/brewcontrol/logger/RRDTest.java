@@ -32,7 +32,7 @@ public class RRDTest {
 	@Test
 	public void getGraph() throws IOException, InterruptedException {
 		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
-		Thread.sleep(1000);
+		Thread.sleep(1500);
 		rrd.log(1d);
 		assertEquals("test.png", rrd.getGraph().getName());
 	}

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.FakeActuator;
-import ch.goodrick.brewcontrol.sensor.SensorListener;
 import ch.goodrick.brewcontrol.sensor.SensorThread;
 
 /**
@@ -21,7 +20,7 @@ import ch.goodrick.brewcontrol.sensor.SensorThread;
  * @author sebastian@goodrick.ch
  *
  */
-public class RestExecuter implements Runnable, SensorListener {
+public class RestExecuter implements Runnable {
 	private final Rest rest;
 	private final Actuator heater;
 	private final SensorThread temperatureSensor;
@@ -74,21 +73,6 @@ public class RestExecuter implements Runnable, SensorListener {
 	@Override
 	public void run() {
 		log.info(rest.getName() + " is starting.");
-		// check if we are below largest delta -.no need to have a thread
-		// running
-		// Double delta = (rest.getTemperature() -
-		// temperatureSensor.getTemperature()) * 10;
-		// if (delta > temperatureAdjust.lastKey()) {
-		// // register listener and return
-		// temperatureSensor.addListenerAbove(this, rest.getTemperature() -
-		// temperatureAdjust.lastKey());
-		// setStatus();
-		// heater.on();
-		// log.info("Terminating RestExecuter thread");
-		// return;
-		// } else {
-		// temperatureSensor.clearThresholdListener();
-		// }
 
 		// keep running in three states
 		while (run && (rest.getState().equals(RestState.HEATING) || rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.INACTIVE))) {
@@ -187,11 +171,6 @@ public class RestExecuter implements Runnable, SensorListener {
 
 	private void clearListeners() {
 		listener.clear();
-	}
-
-	@Override
-	public void onSensorEvent(Double value) {
-		(new Thread(this)).start();
 	}
 
 	public void terminate() {
