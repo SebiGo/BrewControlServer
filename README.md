@@ -5,42 +5,43 @@ BrewControl standalone java server
 [![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
 [![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
 
-## What does this software do?
-This software brews beer. Well, it controls the mashing process. You can run this software on a Raspberry Pi and you need to connect a DS18B20 temperature sensor and some relay, preferably a solid state relay. The relay connects to the heating in your mashing kettle.
-In this repository, you will find the server, that exposes all necessary rest services to control the mashing process. You can find a suitable client in the [BrewControlClient repository][BrewControlClient]. 
+## About BrewControlServer
+This software brews beer. Well, it controls the mashing process. You can run it on a Raspberry Pi, connected to a DS18B20 temperature sensor and any relay, preferably a solid state relay. The relay connects to the heating in your mashing kettle.
+In this repository, you will find the server that provides all necessary REST services to control the mashing process. You can find a suitable client in the [BrewControlClient repository][BrewControlClient]. 
 
 ## Installation
 
-###Get it all up and running
-There are a few steps to get everything up and running:
+Perform these tasks in sequence to get everything up and running:
 
-1. [Prepare hardware](#1-prepare-hardware)
-2. [Prepare operating system](#2-prepare-operating-system)
+1. [Prepare the hardware](#1-prepare-the-hardware)
+2. [Prepare the operating system](#2-prepare-the-operating-system)
 3. [Compile or download the server](#3-compile-or-download-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
 
-These steps will be described in the next sections.
+### 1. Prepare the hardware
 
-#### 1. Prepare hardware
-
-Before you can start using this software, you need to set up the hardware. You  need
+Before you can start using this software, you need to set up the hardware. You  need:
 * a Raspberry Pi,
 * a DS18B20 1-wire Temperature Sensor and a 4.7 kOhm resistor
-* some sort of a relay (preferably a Solid State Relay)
-* some button
+* any type of a relay (preferably Solid State)
+* a button
 
-This is how to connect the devices:
+To connect the devices:
 * Connect the button to GPIO1 and Ground.
 * Connect the Relay to GPIO4 and Ground.
-* Connect the DS18B10 to the Raspberry Pi, Pin1 GROUND to 0V/Ground, Pin2 DATA  to GPIO7, Pin3 POWER to 3V3
+* Connect the DS18B10 to the Raspberry Pi: 
+  * Pin1 GROUND to 0V/Ground
+  * Pin2 DATA to GPIO7
+  * Pin3 POWER to 3V3
+  * Connect the 4k7 resistor between Pin3/3V3 and DATA/GPIO7
 
 See [the pi4j website][pi4j] for a pin layout.
 
-#### 2. Prepare operating system
+### 2. Prepare the operating system
  
 Install the current [Raspbian operating][raspbian] system to an SD card and boot the 
-RaspberryPi. Please see the [installation instructions on the Raspberry Pi website][raspinstall].
+RaspberryPi. For more information, see the [installation instructions on the Raspberry Pi website][raspinstall].
 
 Next ssh into your RaspberryPi and launch raspi-config:
 ```
@@ -50,18 +51,18 @@ sudo raspi-config
 Hint: Password is 'raspberry'. 
 Expand the file system and quit the tool.
 
-Edit the file */boot/config.txt* and add a line at the end of the file:
+Edit the */boot/config.txt* file and add the following line at the end:
 ```
 dtoverlay=w1-gpio 
 ```
 
-Edit the file */etc/modules* and two lines at the end of the file:
+Edit the */etc/modules* file and the following two lines at the end:
 ```
 w1-gpio
 w1-therm
 ```
 
-Install java to your Raspberry Pi:
+Install java on your Raspberry Pi.
 ```
 sudo apt-get install oracle-java8-jdk
 ```
@@ -71,9 +72,9 @@ Reboot your Raspberry Pi
 sudo reboot
 ```
 
-#### 3. Compile or download the server
+### 3. Compile or download the server
 
-Download the source and cd into that directory to build:
+Download the source and change into that directory to build.
 ```
 git clone git@github.com:SebastianGoodrick/BrewControlServer.git
 cd BrewControlServer
@@ -81,9 +82,9 @@ mvn package
 scp target/brewcontrol-0.2.0-SNAPSHOT.jar pi@raspberrypi:~/brewcontrol.jar
 ```
 
-#### 4. Launch the server
+### 4. Launch the server
 
-Execute the jar file by running
+Execute the jar file by running:
  
 ```
 sudo java -jar brewcontrol.jar gpio
@@ -107,20 +108,19 @@ on the Raspberry Pi. This launches the standalone brewcontrol server. You should
 12249 [main] INFO ch.goodrick.brewcontrol.sensor.SensorDS18B20 - Found and using sensor DS18B20 with ID: 28-0000067b69f6
 ```
 
-Please note the line *Setting the server's publish address to be ...*. This is the connection string you need to enter in your client. 
+Note the server's publish address string to enter for your client later *Setting the server's publish address to be ...*. 
 
 Rather than *gpio* you may also specify:
 * **gpio**: This really is what you want. (GPIO-Pins are used.)
 * **piface**: This uses the Piface extension board Relay1 and Button1.
 * **simulate**:  Simulate doesn't use any physical buttons, sensors or relays, it just simulates these devices.
 
-Please note that brewcontrol requires sudo permission as it uses [pi4j which
-uses wiringpi][pi4jsudo], which requires superuser rights.
+Note that brewcontrol requires sudo as it uses [Pi4J which uses WiringPi][pi4jsudo]. WiringPi requires superuser rights.
 
-#### 5. Launch the server automatically
-If you want the BrewControlServer to launch automatically, you have to crate a start script.
+### 5. Launch the server automatically
+If you want the BrewControlServer to launch automatically, you have to create a start script.
 
-Create the file */etc/init.d/brewcontrol* (as root) with this content:
+Create a file as root: */etc/init.d/brewcontrol*
 ```
 #!/bin/bash
 # /etc/init.d/brewcontrol
