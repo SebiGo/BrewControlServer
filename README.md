@@ -1,6 +1,10 @@
 # BrewControlServer
 BrewControl standalone java server
 
+## Continuous integration and code coverage 
+[![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
+[![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+
 ## What does this software do?
 This software brews beer. Well, it controls the mashing process. You can run this software on a Raspberry Pi and you need to connect a DS18B20 temperature sensor and some relay, preferably a solid state relay. The relay connects to the heating in your mashing kettle.
 In this repository, you will find the server, that exposes all necessary rest services to control the mashing process. You can find a suitable client in the [BrewControlClient repository][BrewControlClient]. 
