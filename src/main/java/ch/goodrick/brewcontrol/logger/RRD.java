@@ -29,7 +29,7 @@ public class RRD implements Logger {
 	private long startTime;
 	private PhysicalQuantity physicalQuantity;
 	private String rrdPath;
-	RrdGraph graph;
+	private RrdGraph graph;
 
 	@Override
 	public void log(Double value) {

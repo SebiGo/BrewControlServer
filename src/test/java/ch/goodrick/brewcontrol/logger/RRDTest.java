@@ -1,6 +1,6 @@
 package ch.goodrick.brewcontrol.logger;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -27,5 +27,19 @@ public class RRDTest {
 		} catch (IOException e) {
 			fail("IOException while creating class RRD.");
 		}
+	}
+
+	@Test
+	public void getGraph() throws IOException, InterruptedException {
+		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
+		Thread.sleep(1000);
+		rrd.log(1d);
+		assertEquals("test.png", rrd.getGraph().getName());
+	}
+
+	@Test(expected=IOException.class)
+	public void getGraphException() throws IOException {
+		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
+		rrd.getGraph();
 	}
 }
