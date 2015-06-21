@@ -146,14 +146,11 @@ public class BrewControl {
 	 * Jettison server to.
 	 * 
 	 * @return
+	 * @throws SocketException 
 	 */
-	private static String getNetworkAddress() {
+	private static String getNetworkAddress() throws SocketException {
 		Enumeration<NetworkInterface> nics;
-		try {
-			nics = NetworkInterface.getNetworkInterfaces();
-		} catch (SocketException e) {
-			return "localhost";
-		}
+		nics = NetworkInterface.getNetworkInterfaces();
 		while (nics.hasMoreElements()) {
 			NetworkInterface nic = (NetworkInterface) nics.nextElement();
 			Enumeration<InetAddress> addresses = nic.getInetAddresses();
