@@ -22,6 +22,7 @@ public class MashingTest {
 	public void test() throws IOException {
 		String name = "test";
 		Mashing mashing = Mashing.getInstance();
+		mashing.terminate();
 		Actuator actuator = new FakeActuator(PhysicalQuantity.TEMPERATURE);
 		Sensor sensor = new FakeSensor(actuator);
 		Button button = new VirtualButton();
@@ -45,6 +46,7 @@ public class MashingTest {
 	public void testTerminate() throws IOException, InterruptedException {
 		String name = "test";
 		Mashing mashing = Mashing.getInstance();
+		mashing.terminate();
 		Actuator actuator = new FakeActuator(PhysicalQuantity.TEMPERATURE);
 		Sensor sensor = new FakeSensor(actuator);
 		Button button = new VirtualButton();
@@ -55,7 +57,7 @@ public class MashingTest {
 		try {
 			assertEquals(RestState.INACTIVE, mashing.getFirstRest().getState());
 			mashing.startMashing();
-			Thread.sleep(10);
+			Thread.sleep(50);
 			assertEquals(RestState.HEATING, mashing.getFirstRest().getState());
 			mashing.terminate();
 			assertEquals(RestState.INACTIVE, mashing.getFirstRest().getState());
