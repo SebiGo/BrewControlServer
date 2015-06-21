@@ -71,7 +71,7 @@ public class BrewControl {
 				modes += mode.getCommandlineOption() + "|";
 			}
 			log.error("Please supply mode [" + modes.substring(0, modes.length() - 1) + "]");
-			System.exit(-1);
+			return;
 		} else {
 			opMode = OperationMode.getModeFromCommandlineOption(argv[0]);
 		}

@@ -30,4 +30,10 @@ public class BrewControlTest {
 		BrewControl.main(argv);
 	}
 
+	@Test
+	public void testMainNoParam() throws Exception {
+		String[] argv = new String[0];
+		BrewControl.main(argv);
+	}
+
 }
