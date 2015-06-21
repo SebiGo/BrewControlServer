@@ -1,8 +1,6 @@
 package ch.goodrick.brewcontrol.mashing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -19,7 +17,21 @@ import ch.goodrick.brewcontrol.sensor.Sensor;
 public class MashingTest {
 
 	@Test
-	public void test() throws IOException {
+	public void testMashingTermination() throws MashingException {
+		Mashing mashing = Mashing.getInstance();
+		mashing.setFirstRest(null);
+		mashing.startMashing();
+		mashing.continueRest();
+	}
+
+	@Test(expected = MashingException.class)
+	public void testStartUninitialisedMashing() throws MashingException {
+		Mashing mashing = Mashing.getInstance();
+		mashing.startMashing();
+	}
+
+	@Test
+	public void test() throws IOException, InterruptedException {
 		String name = "test";
 		Mashing mashing = Mashing.getInstance();
 		mashing.terminate();
@@ -29,14 +41,18 @@ public class MashingTest {
 		mashing.initMashing(sensor, actuator, button);
 		mashing.setName(name);
 
-		assertEquals(mashing.getActuator(), actuator);
-		assertEquals(mashing.getName(), name);
+		assertEquals(actuator, mashing.getActuator());
+		assertEquals(name, mashing.getName());
+		assertEquals(sensor.getID(), mashing.getTemperatureSensor().getID());
+		assertEquals(sensor.getPhysicalQuantity(), mashing.getTemperatureSensor().getPhysicalQuantity());
+		assertTrue(mashing.getTemperatureSensor().getValue() > 0d);
 
 		mashing.addRest(new Rest(name, 1d, 1, true));
 		assertNotNull(mashing.getFirstRest());
 
 		try {
 			mashing.startMashing();
+			assertNotNull(mashing.getTempLogger());
 		} catch (MashingException e) {
 			fail(e.getMessage());
 		}
@@ -53,7 +69,7 @@ public class MashingTest {
 		mashing.initMashing(sensor, actuator, button);
 		mashing.setName(name);
 		mashing.addRest(new Rest(name, 100d, 1, true));
-		
+
 		try {
 			assertEquals(RestState.INACTIVE, mashing.getFirstRest().getState());
 			mashing.startMashing();

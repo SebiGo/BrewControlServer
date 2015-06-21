@@ -53,10 +53,6 @@ public class Mashing {
 		return tempLogger;
 	}
 
-	public void setTempLogger(RRD tempLogger) {
-		this.tempLogger = tempLogger;
-	}
-
 	public String getName() {
 		return name;
 	}
