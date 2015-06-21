@@ -39,6 +39,13 @@
 							<exclude>/src/main/java/ch/goodrick/brewcontrol/button/GPIOButton.class</exclude>
 							<exclude>/src/main/java/ch/goodrick/brewcontrol/BrewControl.class</exclude>
 						</excludes>
+						<ignores>
+							<ignore>ch.goodrick.brewcontrol.actuator.PiFaceRelayActuator.class</ignore>
+							<ignore>ch.goodrick.brewcontrol.sensor.SensorDS18B20.class</ignore>
+							<ignore>ch.goodrick.brewcontrol.button.PiFaceButton.class</ignore>
+							<ignore>ch.goodrick.brewcontrol.button.GPIOButton.class</ignore>
+							<ignore>ch.goodrick.brewcontrol.BrewControl.class</ignore>
+						</ignores>
 					</instrumentation>
 				</configuration>
 			</plugin>
