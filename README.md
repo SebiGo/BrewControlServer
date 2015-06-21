@@ -175,6 +175,9 @@ You need to make the script executable and add it to runlevel 2:
 sudo chmod 755 /etc/init.d/brewcontrol
 update-rc.d brewcontrol defaults
 ```
+### 6. Launch the client
+[Start the client][BrewControlClientDirect] or have a look at the [BrewControlClient][BrewControlClient] repository.
+
 
 # Contact, Support, Bugs, Feature requests
 Please use [GitHub Issues][issues] for bugs and feature requests.
@@ -190,3 +193,4 @@ Please use [GitHub Issues][issues] for bugs and feature requests.
 [raspbian]: https://www.raspberrypi.org/downloads/
 [raspinstall]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
 [BrewControlClient]: https://github.com/SebastianGoodrick/BrewControlClient
+[BrewControlClientDirect]: http://sebastiangoodrick.github.io/BrewControlClient/www/
