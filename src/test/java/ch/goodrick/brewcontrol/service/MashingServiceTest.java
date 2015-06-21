@@ -69,4 +69,12 @@ public class MashingServiceTest {
 		assertEquals(null, mvo.getActiveRest());
 	}
 
+	@Test
+	public void testContinueMashing() throws IOException {
+		Mashing mashing = Mashing.getInstance();
+		mashing.terminate();
+		MashingService ms = new MashingService();
+		ms.continueMashing();
+
+	}
 }

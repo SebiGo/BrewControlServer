@@ -35,6 +35,12 @@ public enum OperationMode {
 		return mode;
 	}
 
+	/**
+	 * This converts a string into an an enum. 
+	 * @param cmdOption  the string to be converted int an enum.
+	 * @return
+	 * @throws UnknownParameterException
+	 */
 	public static OperationMode getModeFromCommandlineOption(String cmdOption) throws UnknownParameterException {
 		for (OperationMode mode : values()) {
 			if (mode.getCommandlineOption().equals(cmdOption)) {
