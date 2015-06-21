@@ -2,15 +2,19 @@
 BrewControl standalone java server
 
 ## What does this software do?
-TBD
+This software brews beer. Well, it controls the mashing process. You can run this software on a Raspberry Pi and you need to connect a DS18B20 temperature sensor and some relay, preferably a solid state relay. The relay connects to the heating in your mashing kettle.
+In this repository, you will find the server, that exposes all necessary rest services to control the mashing process. You can find a suitable client in the [BrewControlClient repository][BrewControlClient]. 
 
 ## Installation
 
-###Prepare your Raspberry Pi
+###Get it all up and running
+There are a few steps to get everything up and running:
 1. Prepare hardware
 2. Prepare operating system
 3. Compile or download the server
 4. Launch the server
+5. Launch the server automatically (optional)
+These steps will be described in the next sections.
 
 #### 1. Prepare hardware
 
@@ -107,11 +111,79 @@ Rather than *gpio* you may also specify:
 Please note that brewcontrol requires sudo permission as it uses [pi4j which
 uses wiringpi][pi4jsudo], which requires superuser rights.
 
+#### 5. Launch the server automatically
+If you want the BrewControlServer to launch automatically, you have to crate a start script.
+
+Create the file */etc/init.d/brewcontrol* (as root) with this content:
+```
+#!/bin/bash
+# /etc/init.d/brewcontrol
+
+### BEGIN INIT INFO
+# Provides:          brewcontrol
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: BrewControl
+# Description:       This service is used to brew beer.
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DESC="brewcontrol server"
+NAME=brewcontrol
+PIDFILE=/var/run/brewcontrol.pid
+SCRIPTNAME=/etc/init.d/"$NAME"
+
+test -f $DAEMON || exit 0
+
+. /lib/lsb/init-functions
+
+
+case "$1" in
+        start)  log_daemon_msg "Starting BrewControlServer" "brewcontrol"
+                /usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol-0.1.0-executable.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
+                echo $! > $PIDFILE
+                log_end_msg $?
+                ;;
+        stop)   log_daemon_msg "Stopping BrewControlserver" "brewcontrol"
+                killproc -p $PIDFILE $DAEMON
+                RETVAL=$?
+                [ $RETVAL -eq 0 ] && [ -e "$PIDFILE" ] && rm -f $PIDFILE
+                log_end_msg $RETVAL
+                ;;
+        restart) log_daemon_msg "Restarting Brewcontrol" "brewcontrol"
+                $0 stop
+                $0 start
+                ;;
+        reload|force-reload) log_daemon_msg "Reloading BrewControlServer" "brewcontrol"
+                # there is no reload method
+                log_end_msg 0
+                ;;
+        status)
+                status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+                ;;
+        *)      log_action_msg "Usage: /etc/init.d/brewcontrol {start|stop|status|restart|reload|force-reload}"
+                exit 2
+                ;;
+esac
+
+exit 0
+
+```
+You need to make the script executable and add it to runlevel 2:
+```
+sudo chmod 755 /etc/init.d/brewcontrol
+update-rc.d brewcontrol defaults
+```
+
 ## Contact, Support, Bugs, Feature requests
 Please use [GitHub Issues][issues] for bugs and feature requests.
 
+[raspberry]: http://raspberrypi.org
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
 [pi4jsudo]: http://pi4j.com/faq.html#permissions
 [issues]: https://github.com/SebastianGoodrick/BrewControlServer/issues
 [raspbian]: https://www.raspberrypi.org/downloads/
 [raspinstall]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
+[BrewControlClient]: https://github.com/SebastianGoodrick/BrewControlClient
