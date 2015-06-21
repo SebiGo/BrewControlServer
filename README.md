@@ -11,6 +11,7 @@ Perform these tasks in sequence to get everything up and running:
 3. [Compile or download the server](#3-compile-or-download-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
+6. [Launch the client](#4-launch-the-client)
 
 ## 1. Prepare the hardware
 
@@ -176,7 +177,7 @@ sudo chmod 755 /etc/init.d/brewcontrol
 update-rc.d brewcontrol defaults
 ```
 ### 6. Launch the client
-[Start the client][BrewControlClientDirect] or have a look at the [BrewControlClient][BrewControlClient] repository.
+[Start the client][BrewControlClientDirect] or have a look at the [BrewControlClient][BrewControlClient] repository for more options including a smart phone app.
 
 
 # Contact, Support, Bugs, Feature requests
