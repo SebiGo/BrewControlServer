@@ -1,0 +1,53 @@
+#!/bin/bash
+# /etc/init.d/brewcontrol
+
+### BEGIN INIT INFO
+# Provides:          brewcontrol 
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: BrewControl
+# Description:       This service is used to brew beer.
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DESC="brewcontrol server"
+NAME=brewcontrol
+PIDFILE=/var/run/brewcontrol.pid
+SCRIPTNAME=/etc/init.d/"$NAME"
+
+test -f $DAEMON || exit 0
+
+. /lib/lsb/init-functions
+
+
+case "$1" in 
+	start)  log_daemon_msg "Starting BrewControlServer" "brewcontrol"
+        	/usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol-0.1.0-executable.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
+		echo $! > $PIDFILE
+		log_end_msg $?
+	        ;;
+	stop)   log_daemon_msg "Stopping BrewControlserver" "brewcontrol"
+	        killproc -p $PIDFILE $DAEMON
+	        RETVAL=$?
+	        [ $RETVAL -eq 0 ] && [ -e "$PIDFILE" ] && rm -f $PIDFILE
+	        log_end_msg $RETVAL
+	        ;;
+	restart) log_daemon_msg "Restarting Brewcontrol" "brewcontrol"
+	        $0 stop
+	        $0 start
+	        ;;
+	reload|force-reload) log_daemon_msg "Reloading BrewControlServer" "brewcontrol"
+	        # there is no reload method
+	        log_end_msg 0
+	        ;;
+	status)
+	        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+	        ;;
+	*)      log_action_msg "Usage: /etc/init.d/brewcontrol {start|stop|status|restart|reload|force-reload}"
+	        exit 2
+	        ;;
+esac
+
+exit 0

@@ -76,7 +76,8 @@ public class BrewControl {
 			opMode = OperationMode.getModeFromCommandlineOption(argv[0]);
 		}
 
-		Mashing.getInstance().setName("Weizenbier");
+		// pre set with some useful values
+		Mashing.getInstance().setName("BrewControl");
 		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 1, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
 		Mashing.getInstance().addRest(new Rest("Maltoserast", 62d, 50, Boolean.TRUE));

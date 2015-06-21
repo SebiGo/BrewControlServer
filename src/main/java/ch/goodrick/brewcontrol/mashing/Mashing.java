@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.button.Button;
 import ch.goodrick.brewcontrol.button.ButtonListener;
@@ -23,7 +26,7 @@ import ch.goodrick.brewcontrol.sensor.SensorThread;
  * @author sebastian@goodrick.ch
  */
 public class Mashing {
-	// private Logger log = LoggerFactory.getLogger(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private VirtualButton virtualButton = new VirtualButton();
 	private static Mashing instance;
 	private String name = "BrewControl";
@@ -137,12 +140,11 @@ public class Mashing {
 
 		// start temperatureThread & log temperatures
 		tempThread = SensorThread.startTemperatureThread(1000, getTemperatureSensor());
-		final RRD dl = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
-		tempLogger = dl;
+		tempLogger = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
 		tempThread.addListener(new SensorListener() {
 			@Override
 			public void onSensorEvent(Double value) {
-				dl.log(value);
+				tempLogger.log(value);
 				setCurrentTemperature(value);
 			}
 		});
@@ -168,6 +170,13 @@ public class Mashing {
 			throw new MashingAlreadyActiveException();
 		}
 		active = true;
+
+		// reset RRD database
+		try {
+			tempLogger = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
+		} catch (IOException e) {
+			log.warn("Could not reset RRD temperature logger database.");
+		}
 
 		executeRest(getFirstRest(), actuator, buttons);
 	}
