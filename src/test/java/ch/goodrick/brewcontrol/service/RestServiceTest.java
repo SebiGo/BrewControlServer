@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -63,10 +64,11 @@ public class RestServiceTest {
 	public void testGetRests() {
 		deleteRests();
 		rs.newRest(rvo1);
+		rs.newRest(rvo2);
 		Response r = rs.getRests();
 		RestVO[] restvos = (RestVO[]) r.getEntity();
 		assertEquals(r.getHeaderString("Access-Control-Allow-Origin"), "*");
-		assertEquals(restvos.length, 1);
+		assertEquals(restvos.length, 2);
 		assertEquals(restvos[0].getName(), rest.getName());
 		assertEquals(restvos[0].getTemperature(), rest.getTemperature(), 0.001d);
 		assertTrue(restvos[0].getDuration() == rest.getDuration());
@@ -99,6 +101,7 @@ public class RestServiceTest {
 	public void testSaveRest() {
 		String newName = "changed";
 		deleteRests();
+		rs.newRest(rvo2);
 		rs.newRest(rvo1);
 		Response r = rs.getRests();
 		RestVO[] restvos = (RestVO[]) r.getEntity();
@@ -113,6 +116,12 @@ public class RestServiceTest {
 		r2 = rs.getRest(restvos[0].getUuid());
 		restvo = (RestVO) r2.getEntity();
 		assertEquals(restvo.getName(), newName);
+	}
+
+	@Test
+	public void testSaveRestUnknown() {
+		deleteRests();
+		assertEquals(HttpURLConnection.HTTP_NOT_FOUND, rs.saveRest(UUID.randomUUID(), rvo1).getStatus());
 	}
 
 	@Test
@@ -138,6 +147,12 @@ public class RestServiceTest {
 		r = rs.getRests();
 		restvos = (RestVO[]) r.getEntity();
 		assertEquals(restvos.length, 1);
+	}
+
+	@Test
+	public void testDeleteTestUnknown() {
+		deleteRests();
+		assertEquals(HttpURLConnection.HTTP_NOT_FOUND, rs.deleteRest(UUID.randomUUID()).getStatus());
 	}
 
 	@Test

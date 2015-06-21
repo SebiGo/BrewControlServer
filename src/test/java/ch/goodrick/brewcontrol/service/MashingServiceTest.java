@@ -12,9 +12,11 @@ import org.junit.Test;
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.FakeActuator;
 import ch.goodrick.brewcontrol.button.Button;
+import ch.goodrick.brewcontrol.button.FakeButton;
 import ch.goodrick.brewcontrol.button.VirtualButton;
 import ch.goodrick.brewcontrol.common.PhysicalQuantity;
 import ch.goodrick.brewcontrol.mashing.Mashing;
+import ch.goodrick.brewcontrol.mashing.MashingException;
 import ch.goodrick.brewcontrol.mashing.Rest;
 import ch.goodrick.brewcontrol.sensor.FakeSensor;
 import ch.goodrick.brewcontrol.sensor.Sensor;
@@ -82,7 +84,7 @@ public class MashingServiceTest {
 	}
 
 	@Test
-	public void testNewName() {
+	public void testSaveName() {
 		MashingService ms = new MashingService();
 		MashingVO mvo = new MashingVO();
 		mvo.setName("new");
@@ -93,6 +95,18 @@ public class MashingServiceTest {
 		assertEquals(mvo.getName(), ((MashingVO) (ms.getMashing().getEntity())).getName());
 	}
 
+	@Test
+	public void testNewName() {
+		MashingService ms = new MashingService();
+		MashingVO mvo = new MashingVO();
+		mvo.setName("new");
+		mvo.setAltitude(0);
+		mvo.setMeasuredTemperatureBoilingWater(100d);
+		mvo.setMeasuredTemperatureIceWater(1d);
+		ms.newName(mvo);
+		assertEquals(mvo.getName(), ((MashingVO) (ms.getMashing().getEntity())).getName());
+	}
+	
 	@Test
 	public void testDeleteRest() {
 		MashingService ms = new MashingService();
@@ -111,10 +125,26 @@ public class MashingServiceTest {
 		assertEquals(HttpURLConnection.HTTP_UNAVAILABLE, ms.startMashing().getStatus());
 	}
 
-	@Test
-	public void testGetGraph() {
+	@Test(expected = MashingException.class)
+	public void testGetGraph1() throws MashingException {
 		Mashing mashing = Mashing.getInstance();
 		mashing.addRest(new Rest(test, 1d, 1000, Boolean.FALSE));
+		mashing.startMashing();
+		MashingService ms = new MashingService();
+		assertNotNull(ms.getGraph());
+	}
+
+	@Test
+	public void testGetGraph2() throws IOException {
+		Mashing mashing = Mashing.getInstance();
+		FakeActuator a = new FakeActuator(PhysicalQuantity.TEMPERATURE);
+		mashing.initMashing(new FakeSensor(a), a, new FakeButton());
+		mashing.addRest(new Rest(test, 1d, 1000, Boolean.FALSE));
+		try {
+			mashing.startMashing();
+		} catch (MashingException e) {
+			// ignore
+		}
 		MashingService ms = new MashingService();
 		assertNotNull(ms.getGraph());
 	}
