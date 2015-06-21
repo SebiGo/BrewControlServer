@@ -1,6 +1,6 @@
 package ch.goodrick.brewcontrol.mashing;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -26,6 +26,7 @@ public class RestExecuterTest {
 			}
 		});
 		(new Thread(re)).start();
+		re.terminate();
 		//TODO can we make some assertions?
 	}
 
