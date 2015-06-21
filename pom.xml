@@ -4,7 +4,7 @@
 
 	<groupId>ch.goodrick</groupId>
 	<artifactId>brewcontrol</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0-snapshot</version>
 	<packaging>jar</packaging>
 
 	<name>BrewControl</name>

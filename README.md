@@ -72,7 +72,7 @@ Download the source and cd into that directory to build:
 git clone git@github.com:SebastianGoodrick/BrewControlServer.git
 cd BrewControlServer
 mvn package
-scp target/brewcontrol-0.1.0-executable.jar pi@raspberrypi:~
+scp target/brewcontrol-0.1.0-executable.jar pi@raspberrypi:~/brewcontrol.jar
 ```
 
 #### 4. Launch the server
@@ -80,7 +80,7 @@ scp target/brewcontrol-0.1.0-executable.jar pi@raspberrypi:~
 Execute the jar file by running
  
 ```
-sudo java -jar brewcontrol-0.1.0-executable.jar gpio
+sudo java -jar brewcontrol.jar gpio
 ```
 
 on the Raspberry Pi. This launches the standalone brewcontrol server. You should get something like this:
@@ -142,7 +142,7 @@ test -f $DAEMON || exit 0
 
 case "$1" in
         start)  log_daemon_msg "Starting BrewControlServer" "brewcontrol"
-                /usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol-0.1.0-executable.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
+                /usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
                 echo $! > $PIDFILE
                 log_end_msg $?
                 ;;

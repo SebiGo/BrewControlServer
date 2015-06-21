@@ -24,7 +24,7 @@ test -f $DAEMON || exit 0
 
 case "$1" in 
 	start)  log_daemon_msg "Starting BrewControlServer" "brewcontrol"
-        	/usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol-0.1.0-executable.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
+        	/usr/bin/sudo /usr/bin/nohup /usr/bin/java -jar /home/pi/brewcontrol.jar gpio >> /home/pi/brewcontrol.log 2>&1 &
 		echo $! > $PIDFILE
 		log_end_msg $?
 	        ;;
