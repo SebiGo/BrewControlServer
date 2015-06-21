@@ -1,14 +1,16 @@
 package ch.goodrick.brewcontrol.button;
 
+import java.io.IOException;
+
 import org.junit.Test;
+
+import com.pi4j.device.piface.PiFaceSwitch;
 
 public class PiFaceButtonTest {
 
-	@Test
-	public void test() {
-		// this can not be tested as a junit test case since this really needs
-		// the hardware. Any generic functions are tested in the FakeButton
-		// Test.
+	@Test(expected = NullPointerException.class)
+	public void test() throws IOException {
+		new PiFaceButton(null, PiFaceSwitch.S1);
 	}
 
 }

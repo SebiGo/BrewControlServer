@@ -1,12 +1,9 @@
 package ch.goodrick.brewcontrol;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.fail;
 
 import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 
 public class BrewControlTest {
 
