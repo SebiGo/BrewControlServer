@@ -29,14 +29,14 @@ public class RRD implements Logger {
 	private long startTime;
 	private PhysicalQuantity physicalQuantity;
 	private String rrdPath;
+	RrdGraph graph;
 
 	@Override
 	public void log(Double value) {
 		try {
 			RrdDb rrdDb = new RrdDb(rrdPath);
-			Sample sample = rrdDb.createSample();
-			sample.setValue(name, value);
-			sample.update();
+			logIntoRRD(rrdDb, value);
+			generateGraph(rrdDb);
 			rrdDb.close();
 		} catch (IOException e) {
 			log.warn("Could not write sample to RRD.", e);
@@ -53,20 +53,10 @@ public class RRD implements Logger {
 	 * @throws IOException
 	 */
 	public File getGraph() throws IOException {
-		RrdDb rrdDb = new RrdDb(rrdPath);
-		RrdGraphDef gDef = new RrdGraphDef();
-		gDef.setWidth(500);
-		gDef.setHeight(300);
-		gDef.setFilename(name + ".png");
-		gDef.setStartTime(startTime);
-		gDef.setEndTime(rrdDb.getLastUpdateTime());
-		gDef.setTitle(name);
-		gDef.setVerticalLabel(physicalQuantity.getUnit());
-		gDef.datasource(physicalQuantity.toString(), rrdPath, name, ConsolFun.MAX);
-		gDef.line(physicalQuantity.toString(), Color.RED, physicalQuantity.toString() + " max");
-		gDef.setImageFormat("png");
-		RrdGraph graph = new RrdGraph(gDef);
-		rrdDb.close();
+		if (graph == null || graph.getRrdGraphInfo() == null) {
+			log.warn("RrdGraph not ready yet - no sample?");
+			throw new IOException("RrdGraph not ready yet - no sample?");
+		}
 		return new File(graph.getRrdGraphInfo().getFilename());
 	}
 
@@ -93,4 +83,25 @@ public class RRD implements Logger {
 		rrdDb.close();
 	}
 
+	private void logIntoRRD(RrdDb rrdDb, Double value) throws IOException {
+		Sample sample = rrdDb.createSample();
+		sample.setValue(name, value);
+		sample.update();
+		rrdDb.close();
+	}
+
+	private void generateGraph(RrdDb rrdDb) throws IOException {
+		RrdGraphDef gDef = new RrdGraphDef();
+		gDef.setWidth(500);
+		gDef.setHeight(300);
+		gDef.setFilename(name + ".png");
+		gDef.setStartTime(startTime);
+		gDef.setEndTime(rrdDb.getLastUpdateTime());
+		gDef.setTitle(name);
+		gDef.setVerticalLabel(physicalQuantity.getUnit());
+		gDef.datasource(physicalQuantity.toString(), rrdPath, name, ConsolFun.MAX);
+		gDef.line(physicalQuantity.toString(), Color.RED, physicalQuantity.toString() + " max");
+		gDef.setImageFormat("png");
+		graph = new RrdGraph(gDef);
+	}
 }

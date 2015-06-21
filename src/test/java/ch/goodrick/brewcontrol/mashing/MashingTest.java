@@ -19,7 +19,7 @@ import ch.goodrick.brewcontrol.sensor.Sensor;
 public class MashingTest {
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		String name = "test";
 		Mashing mashing = Mashing.getInstance();
 		Actuator actuator = new FakeActuator(PhysicalQuantity.TEMPERATURE);
@@ -35,8 +35,8 @@ public class MashingTest {
 		assertNotNull(mashing.getFirstRest());
 
 		try {
-			mashing.executeRest();
-		} catch (MashingException | IOException e) {
+			mashing.startMashing();
+		} catch (MashingException e) {
 			fail(e.getMessage());
 		}
 	}

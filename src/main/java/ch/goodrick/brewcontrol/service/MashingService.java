@@ -4,7 +4,6 @@ import static ch.goodrick.brewcontrol.mashing.RestState.ACTIVE;
 import static ch.goodrick.brewcontrol.mashing.RestState.HEATING;
 import static ch.goodrick.brewcontrol.mashing.RestState.WAITING_COMPLETE;
 import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 
 import java.io.File;
@@ -38,28 +37,24 @@ public class MashingService {
 	@GET
 	@Produces({ "application/json", "application/xml" })
 	public Response getMashing() {
-		try {
-			MashingVO mash = new MashingVO();
-			mash.setName(Mashing.getInstance().getName());
-			if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
-				SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
-				mash.setAltitude(s.getAltitude());
-				mash.setMeasuredTemperatureBoilingWater(s.getTempBoilingWater());
-				mash.setMeasuredTemperatureIceWater(s.getTempIceWater());
-			}
-			Rest rest = Mashing.getInstance().getFirstRest();
-			while (rest != null) {
-				if (rest.getState() == HEATING || rest.getState() == WAITING_COMPLETE || rest.getState() == ACTIVE) {
-					mash.setActiveRest(rest.getUuid());
-					mash.setTemperature(Mashing.getInstance().getTemperatureSensor().getValue());
-					break;
-				}
-				rest = rest.getNextRest();
-			}
-			return Response.ok(mash).header("Access-Control-Allow-Origin", "*").build();
-		} catch (IOException e) {
-			return Response.status(HTTP_NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
+		MashingVO mash = new MashingVO();
+		mash.setName(Mashing.getInstance().getName());
+		mash.setTemperature(Mashing.getInstance().getCurrentTemperature());
+		if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
+			SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
+			mash.setAltitude(s.getAltitude());
+			mash.setMeasuredTemperatureBoilingWater(s.getTempBoilingWater());
+			mash.setMeasuredTemperatureIceWater(s.getTempIceWater());
 		}
+		Rest rest = Mashing.getInstance().getFirstRest();
+		while (rest != null) {
+			if (rest.getState() == HEATING || rest.getState() == WAITING_COMPLETE || rest.getState() == ACTIVE) {
+				mash.setActiveRest(rest.getUuid());
+				break;
+			}
+			rest = rest.getNextRest();
+		}
+		return Response.ok(mash).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 	@POST
@@ -95,12 +90,10 @@ public class MashingService {
 	@Path("/start")
 	public Response startMashing() {
 		try {
-			Mashing.getInstance().executeRest();
+			Mashing.getInstance().startMashing();
 			return Response.ok().header("Access-Control-Allow-Origin", "*").build();
 		} catch (MashingException e) {
 			return Response.status(HTTP_UNAVAILABLE).header("Access-Control-Allow-Origin", "*").build();
-		} catch (IOException e) {
-			return Response.status(HTTP_NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
 		}
 	}
 
@@ -114,12 +107,16 @@ public class MashingService {
 	@GET
 	@Path("/graph")
 	@Produces("image/png")
-	public Response getGraph() throws IOException {
+	public Response getGraph() {
 		if (Mashing.getInstance().getTempLogger() == null) {
 			return Response.status(HTTP_UNAVAILABLE).build();
 		}
-		File graph = Mashing.getInstance().getTempLogger().getGraph();
-		return Response.ok(graph).header("Access-Control-Allow-Origin", "*").header("Content-disposition", "inline; filename=" + graph.getName()).build();
+		try {
+			File graph = Mashing.getInstance().getTempLogger().getGraph();
+			return Response.ok(graph).header("Access-Control-Allow-Origin", "*").header("Content-disposition", "inline; filename=" + graph.getName()).build();
+		} catch (IOException e) {
+			return Response.status(HTTP_UNAVAILABLE).header("Access-Control-Allow-Origin", "*").build();
+		}
 	}
 
 	// CORS detection

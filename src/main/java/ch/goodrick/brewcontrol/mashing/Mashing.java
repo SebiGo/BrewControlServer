@@ -27,11 +27,21 @@ public class Mashing {
 	private String name = "BrewControl";
 	private boolean active = false;
 	private RRD tempLogger;
+	private double currentTemperature;
 
 	private Rest firstRest = null;
 	private Sensor temperatureSensor;
 	private Actuator actuator;
 	private Button[] buttons;
+	private SensorThread tempThread;
+
+	public double getCurrentTemperature() {
+		return currentTemperature;
+	}
+
+	private void setCurrentTemperature(double currentTemperature) {
+		this.currentTemperature = currentTemperature;
+	}
 
 	public RRD getTempLogger() {
 		return tempLogger;
@@ -65,7 +75,7 @@ public class Mashing {
 		return temperatureSensor;
 	}
 
-	public void setTemperatureSensor(Sensor sensor) {
+	private void setTemperatureSensor(Sensor sensor) {
 		temperatureSensor = sensor;
 	}
 
@@ -115,11 +125,24 @@ public class Mashing {
 	 *            mashing process
 	 * @param buttons
 	 *            the buttons used to continue the mashing process
+	 * @throws IOException 
 	 */
-	public void initMashing(Sensor sensor, Actuator actuator, Button... buttons) {
+	public void initMashing(Sensor sensor, Actuator actuator, Button... buttons) throws IOException {
 		setTemperatureSensor(sensor);
 		this.actuator = actuator;
 		this.buttons = buttons;
+
+		// start temperatureThread & log temperatures
+		tempThread = SensorThread.startTemperatureThread(1000, getTemperatureSensor());
+		final RRD dl = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
+		tempLogger = dl;
+		tempThread.addListener(new SensorListener() {
+			@Override
+			public void onSensorEvent(Double value) {
+				dl.log(value);
+				setCurrentTemperature(value);
+			}
+		});
 	}
 
 	/**
@@ -130,7 +153,9 @@ public class Mashing {
 	 * @throws IOException
 	 *             if there is a problem with reading the sensor.
 	 */
-	public void executeRest() throws MashingException, IOException {
+	public void startMashing() throws MashingException {
+		
+		// check if we were properly initialised
 		if (getTemperatureSensor() == null || getActuator() == null || buttons == null) {
 			throw new MashingException("Mashing is not yet ready for execution, supply sensor, acutator and button");
 		}
@@ -141,19 +166,7 @@ public class Mashing {
 		}
 		active = true;
 
-		SensorThread tempThread = SensorThread.startTemperatureThread(1000, getTemperatureSensor());
-
-		// start temperatureThread & log temperatures
-		final RRD dl = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
-		tempLogger = dl;
-		tempThread.addListener(new SensorListener() {
-			@Override
-			public void onSensorEvent(Double value) {
-				dl.log(value);
-			}
-		});
-
-		executeRest(getFirstRest(), tempThread, actuator, buttons);
+		executeRest(getFirstRest(), actuator, buttons);
 	}
 
 	/**
@@ -165,8 +178,15 @@ public class Mashing {
 	 * @param buttons
 	 * @throws IllegalRestStateException
 	 */
-	private void executeRest(final Rest rest, final SensorThread tempThread, final Actuator heater, final Button... buttons) throws IllegalRestStateException {
+	private void executeRest(final Rest rest, final Actuator heater, final Button... buttons) throws IllegalRestStateException {
 
+		// stop executing after last rest
+		if (rest == null) {
+			active = false;
+			return;
+		}
+
+		// execute the rest
 		(new Thread(new RestExecuter(rest, heater, tempThread, new RestStateChangeListener() {
 			@Override
 			public void onStateChangedEvent(RestState state) {
@@ -190,12 +210,12 @@ public class Mashing {
 									b.removeListener(this);
 								}
 								rest.setState(RestState.COMPLETED);
-								executeRest(rest.getNextRest(), tempThread, heater, buttons);
+								executeRest(rest.getNextRest(), heater, buttons);
 							}
 						});
 					}
 				} else if (state.equals(RestState.COMPLETED)) {
-					executeRest(rest.getNextRest(), tempThread, heater, buttons);
+					executeRest(rest.getNextRest(), heater, buttons);
 				}
 			}
 		}))).start();

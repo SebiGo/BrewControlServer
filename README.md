@@ -1,21 +1,18 @@
-BrewControlServer
-================= 
+# BrewControlServer
 BrewControl standalone java server
 
-What does this software do?
----------------------------
+## What does this software do?
 TBD
 
-Installation
----------------------------
+## Installation
 
-#Prepare your Raspberry Pi
+###Prepare your Raspberry Pi
 1. Prepare hardware
 2. Prepare operating system
 3. Compile or download the server
 4. Launch the server
 
-## 1. Prepare hardware
+#### 1. Prepare hardware
 
 Before you can start using this software, you need to set up the hardware. You  need
 * a Raspberry Pi,
@@ -30,7 +27,7 @@ This is how to connect the devices:
 
 See [the pi4j website][pi4j] for a pin layout.
 
-## 2. Prepare operating system
+#### 2. Prepare operating system
  
 Install the current [Raspbian operating][raspbian] system to an SD card and boot the 
 RaspberryPi. Please see the [installation instructions on the Raspberry Pi website][raspinstall].
@@ -64,7 +61,7 @@ Reboot your Raspberry Pi
 sudo reboot
 ```
 
-## 3. Compile or download the server
+#### 3. Compile or download the server
 
 Download the source and cd into that directory to build:
 ```
@@ -74,7 +71,7 @@ mvn package
 scp target/brewcontrol-0.1.0-executable.jar pi@raspberrypi:~
 ```
 
-## 4. Launch the server
+#### 4. Launch the server
 
 Execute the jar file by running
  
@@ -110,7 +107,7 @@ Rather than *gpio* you may also specify:
 Please note that brewcontrol requires sudo permission as it uses [pi4j which
 uses wiringpi][pi4jsudo], which requires superuser rights.
 
-# Contact, Support, Bugs, Feature requests
+## Contact, Support, Bugs, Feature requests
 Please use [GitHub Issues][issues] for bugs and feature requests.
 
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
