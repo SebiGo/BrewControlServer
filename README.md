@@ -11,6 +11,7 @@ Perform these tasks in sequence to get everything up and running:
 3. [Compile or download the server](#3-compile-or-download-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
+6. [Launch the client](#6-launch-the-client)
 
 ## 1. Prepare the hardware
 
@@ -175,13 +176,18 @@ You need to make the script executable and add it to runlevel 2:
 sudo chmod 755 /etc/init.d/brewcontrol
 update-rc.d brewcontrol defaults
 ```
+### 6. Launch the client
+[Start the client][BrewControlClientDirect] or have a look at the [BrewControlClient][BrewControlClient] repository for more options including a smart phone app.
+
 
 # Contact, Support, Bugs, Feature requests
 Please use [GitHub Issues][issues] for bugs and feature requests.
 
 # Continuous integration and code coverage 
-[![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
-[![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+Travis CI: [![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+
+coveralls.io: [![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
+
 
 [raspberry]: http://raspberrypi.org
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
@@ -190,3 +196,4 @@ Please use [GitHub Issues][issues] for bugs and feature requests.
 [raspbian]: https://www.raspberrypi.org/downloads/
 [raspinstall]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
 [BrewControlClient]: https://github.com/SebastianGoodrick/BrewControlClient
+[BrewControlClientDirect]: http://sebastiangoodrick.github.io/BrewControlClient/www/
