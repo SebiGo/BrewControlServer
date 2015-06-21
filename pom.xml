@@ -31,13 +31,15 @@
 				<configuration>
 					<format>xml</format>
 					<maxmem>256m</maxmem>
-					<excludes>
-						<exclude>/src/main/java/ch/goodrick/brewcontrol/actuator/PiFaceRelayActuator.class</exclude>
-						<exclude>/src/main/java/ch/goodrick/brewcontrol/sensor/SensorDS18B20.class</exclude>
-						<exclude>/src/main/java/ch/goodrick/brewcontrol/button/PiFaceButton.class</exclude>
-						<exclude>/src/main/java/ch/goodrick/brewcontrol/button/GPIOButton.class</exclude>
-						<exclude>/src/main/java/ch/goodrick/brewcontrol/BrewControl.class</exclude>
-					</excludes>
+					<instrumentation>
+						<excludes>
+							<exclude>/src/main/java/ch/goodrick/brewcontrol/actuator/PiFaceRelayActuator.class</exclude>
+							<exclude>/src/main/java/ch/goodrick/brewcontrol/sensor/SensorDS18B20.class</exclude>
+							<exclude>/src/main/java/ch/goodrick/brewcontrol/button/PiFaceButton.class</exclude>
+							<exclude>/src/main/java/ch/goodrick/brewcontrol/button/GPIOButton.class</exclude>
+							<exclude>/src/main/java/ch/goodrick/brewcontrol/BrewControl.class</exclude>
+						</excludes>
+					</instrumentation>
 				</configuration>
 			</plugin>
 			<plugin>
