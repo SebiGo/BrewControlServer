@@ -1,8 +1,11 @@
 package ch.goodrick.brewcontrol.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -76,5 +79,43 @@ public class MashingServiceTest {
 		MashingService ms = new MashingService();
 		ms.continueMashing();
 
+	}
+
+	@Test
+	public void testNewName() {
+		MashingService ms = new MashingService();
+		MashingVO mvo = new MashingVO();
+		mvo.setName("new");
+		mvo.setAltitude(0);
+		mvo.setMeasuredTemperatureBoilingWater(100d);
+		mvo.setMeasuredTemperatureIceWater(1d);
+		ms.saveName(mvo.getName(), mvo);
+		assertEquals(mvo.getName(), ((MashingVO) (ms.getMashing().getEntity())).getName());
+	}
+
+	@Test
+	public void testDeleteRest() {
+		MashingService ms = new MashingService();
+		ms.deleteRest(UUID.randomUUID());
+		assertEquals(HttpURLConnection.HTTP_BAD_METHOD, ms.deleteRest(UUID.randomUUID()).getStatus());
+	}
+
+	@Test
+	public void testStartDublicateMashing() {
+		Mashing mashing = Mashing.getInstance();
+		mashing.addRest(new Rest(test, 1d, 1000, Boolean.FALSE));
+
+		MashingService ms = new MashingService();
+		ms.startMashing();
+
+		assertEquals(HttpURLConnection.HTTP_UNAVAILABLE, ms.startMashing().getStatus());
+	}
+
+	@Test
+	public void testGetGraph() {
+		Mashing mashing = Mashing.getInstance();
+		mashing.addRest(new Rest(test, 1d, 1000, Boolean.FALSE));
+		MashingService ms = new MashingService();
+		assertNotNull(ms.getGraph());
 	}
 }
