@@ -33,6 +33,7 @@ public class FakeButtonTest {
 		fb.setState(ButtonState.OFF);
 		assertFalse(fb.isOn());
 		assertTrue(fb.isOff());
+		assertTrue(fb.isState(ButtonState.OFF));
 		assertEquals(fb.getState(), ButtonState.OFF);
 		
 	}
