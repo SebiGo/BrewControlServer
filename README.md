@@ -184,8 +184,10 @@ update-rc.d brewcontrol defaults
 Please use [GitHub Issues][issues] for bugs and feature requests.
 
 # Continuous integration and code coverage 
-[![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
-[![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+Travis CI: [![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+
+coveralls.io: [![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
+
 
 [raspberry]: http://raspberrypi.org
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
