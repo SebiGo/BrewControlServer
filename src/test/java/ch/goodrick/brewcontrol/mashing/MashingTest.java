@@ -11,8 +11,10 @@ import ch.goodrick.brewcontrol.actuator.FakeActuator;
 import ch.goodrick.brewcontrol.button.Button;
 import ch.goodrick.brewcontrol.button.VirtualButton;
 import ch.goodrick.brewcontrol.common.PhysicalQuantity;
+import ch.goodrick.brewcontrol.sensor.CalibratedTemperatureSensor;
 import ch.goodrick.brewcontrol.sensor.FakeSensor;
 import ch.goodrick.brewcontrol.sensor.Sensor;
+import ch.goodrick.brewcontrol.service.CalibratedTemperatureSensorTest;
 
 public class MashingTest {
 
@@ -80,5 +82,28 @@ public class MashingTest {
 		} catch (MashingException e) {
 			fail(e.getMessage());
 		}
+	}
+
+	@Test
+	public void testInject() throws IOException, MashingException, InterruptedException {
+		Mashing mashing = Mashing.getInstance();
+		mashing.terminate();
+		Actuator actuator = new FakeActuator(PhysicalQuantity.TEMPERATURE);
+		Button button = new VirtualButton();
+		mashing.initMashing(new CalibratedTemperatureSensor() {
+			@Override
+			public Double getValue() throws IOException {
+				return 0d;
+			}
+
+			@Override
+			public String getID() {
+				return "id";
+			}
+		}, actuator, button);
+		mashing.addRest(new Rest("name", 100d, 1, true));
+		mashing.startMashing();
+		Thread.sleep(1000);
+		assertEquals(0d, mashing.getCurrentTemperature(), 0.01d);
 	}
 }

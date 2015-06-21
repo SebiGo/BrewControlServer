@@ -32,6 +32,7 @@ public class BrewControlTest {
 
 	@Test
 	public void testMainNoParam() throws Exception {
+		new BrewControl();
 		String[] argv = new String[0];
 		BrewControl.main(argv);
 	}
