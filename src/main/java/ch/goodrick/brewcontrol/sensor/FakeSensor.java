@@ -4,9 +4,6 @@ import java.io.IOException;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.ActuatorStatus;
-import ch.goodrick.brewcontrol.actuator.FakeActuator;
-import ch.goodrick.brewcontrol.actuator.PiFaceRelayActuator;
-import ch.goodrick.brewcontrol.common.PhysicalQuantity;
 
 /**
  * This sensor is for developing and simulating purposes only. It connects to
@@ -16,7 +13,7 @@ import ch.goodrick.brewcontrol.common.PhysicalQuantity;
  * @author sebastian@goodrick.ch
  *
  */
-public class FakeSensor implements Sensor {
+public class FakeSensor extends CalibratedTemperatureSensor {
 
 	private Double temperature = 20d;
 	private Actuator actuator;
@@ -37,12 +34,6 @@ public class FakeSensor implements Sensor {
 		} else {
 			temperature -= 0.001d;
 		}
-		return temperature;
+		return getCalibratedValue(temperature);
 	}
-
-	@Override
-	public PhysicalQuantity getPhysicalQuantity() {
-		return PhysicalQuantity.TEMPERATURE;
-	}
-
 }

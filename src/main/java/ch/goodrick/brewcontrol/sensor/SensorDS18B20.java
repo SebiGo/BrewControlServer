@@ -8,8 +8,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.goodrick.brewcontrol.common.PhysicalQuantity;
-
 /**
  * A software representation and driver for the DS18B20 1-wire temperature
  * sensor. The sensor needs to be connected to pin GPIO_04, w1-gpio and w1-therm
@@ -19,7 +17,7 @@ import ch.goodrick.brewcontrol.common.PhysicalQuantity;
  * @author sebastian@goodrick.ch
  *
  */
-public class SensorDS18B20 extends CalibrateTemperatureSensor implements Sensor {
+public class SensorDS18B20 extends CalibratedTemperatureSensor {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private final File sensorFile;
@@ -73,11 +71,6 @@ public class SensorDS18B20 extends CalibrateTemperatureSensor implements Sensor 
 			}
 			return getCalibratedValue(Integer.parseInt(tmp.substring(index + 2)) / 1000d);
 		}
-	}
-
-	@Override
-	public PhysicalQuantity getPhysicalQuantity() {
-		return PhysicalQuantity.TEMPERATURE;
 	}
 
 	private static File deriveValueFile(File sensorFile) {

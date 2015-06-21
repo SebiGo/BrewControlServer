@@ -18,19 +18,20 @@ public class SensorFakeTest {
 	public void test() {
 		Actuator fa = new FakeActuator(PhysicalQuantity.TEMPERATURE);
 		s = new FakeSensor(fa);
+		s.calibrate(0d, 100d, 0);
 		fa.on();
 		assertEquals(s.getID(), "FAKE_SENSOR");
 		try {
-			assertEquals(s.getValue(), 20.1d, 0.01d);
-			assertEquals(s.getValue(), 20.2d, 0.01d);
+			assertEquals(20.1d, s.getValue(), 0.01d);
+			assertEquals(20.2d, s.getValue(), 0.01d);
 		} catch (IOException e) {
 			fail("IOException ocurred.");
 		}
 		fa.off();
 		assertEquals(s.getID(), "FAKE_SENSOR");
 		try {
-			assertEquals(s.getValue(), 20.199d, 0.0005d);
-			assertEquals(s.getValue(), 20.198d, 0.0005d);
+			assertEquals(20.199d, s.getValue(), 0.0005d);
+			assertEquals(20.198d, s.getValue(), 0.0005d);
 		} catch (IOException e) {
 			fail("IOException ocurred.");
 		}

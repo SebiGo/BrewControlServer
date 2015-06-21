@@ -4,15 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.goodrick.brewcontrol.BrewControl;
+import ch.goodrick.brewcontrol.common.PhysicalQuantity;
 
-public abstract class CalibrateTemperatureSensor {
+public abstract class CalibratedTemperatureSensor implements Sensor {
 	static Logger log = LoggerFactory.getLogger(BrewControl.class);
 	private double delta0 = 0;
 	private double correctionFactor = 1;
 
-	private double tempIceWater;
-	private double tempBoilingWater;
-	private long altitude;
+	private double tempIceWater = 0;
+	private double tempBoilingWater = 100;
+	private long altitude = 0;
 
 	public double getTempIceWater() {
 		return tempIceWater;
@@ -55,5 +56,10 @@ public abstract class CalibrateTemperatureSensor {
 	 */
 	protected double getCalibratedValue(double value) {
 		return correctionFactor * value + delta0 + value;
+	}
+
+	@Override
+	public PhysicalQuantity getPhysicalQuantity() {
+		return PhysicalQuantity.TEMPERATURE;
 	}
 }

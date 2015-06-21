@@ -259,7 +259,23 @@ public class Mashing {
 	public void terminate() {
 		if (active) {
 			for (RestExecuter re : threads) {
+				// terminate
 				re.terminate();
+
+				// reset status
+				Rest rest = getFirstRest();
+				while (rest != null) {
+					if (rest.getState().equals(RestState.HEATING)) {
+						rest.setState(RestState.ACTIVE);
+					}
+					if (rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.WAITING_COMPLETE)) {
+						rest.setState(RestState.COMPLETED);
+					}
+					if (rest.getState().equals(RestState.COMPLETED)) {
+						rest.setState(RestState.INACTIVE);
+					}
+					rest = rest.getNextRest();
+				}
 			}
 		}
 		active = false;

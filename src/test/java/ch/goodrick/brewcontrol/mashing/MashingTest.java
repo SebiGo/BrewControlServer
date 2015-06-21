@@ -31,7 +31,7 @@ public class MashingTest {
 		assertEquals(mashing.getActuator(), actuator);
 		assertEquals(mashing.getName(), name);
 
-		mashing.setFirstRest(new Rest(name, 1d, 1, true));
+		mashing.addRest(new Rest(name, 1d, 1, true));
 		assertNotNull(mashing.getFirstRest());
 
 		try {
@@ -41,4 +41,26 @@ public class MashingTest {
 		}
 	}
 
+	@Test
+	public void testTerminate() throws IOException, InterruptedException {
+		String name = "test";
+		Mashing mashing = Mashing.getInstance();
+		Actuator actuator = new FakeActuator(PhysicalQuantity.TEMPERATURE);
+		Sensor sensor = new FakeSensor(actuator);
+		Button button = new VirtualButton();
+		mashing.initMashing(sensor, actuator, button);
+		mashing.setName(name);
+		mashing.addRest(new Rest(name, 100d, 1, true));
+		
+		try {
+			assertEquals(RestState.INACTIVE, mashing.getFirstRest().getState());
+			mashing.startMashing();
+			Thread.sleep(10);
+			assertEquals(RestState.HEATING, mashing.getFirstRest().getState());
+			mashing.terminate();
+			assertEquals(RestState.INACTIVE, mashing.getFirstRest().getState());
+		} catch (MashingException e) {
+			fail(e.getMessage());
+		}
+	}
 }

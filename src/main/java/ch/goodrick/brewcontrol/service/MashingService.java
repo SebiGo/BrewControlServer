@@ -22,14 +22,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.goodrick.brewcontrol.mashing.Mashing;
 import ch.goodrick.brewcontrol.mashing.MashingException;
 import ch.goodrick.brewcontrol.mashing.Rest;
+import ch.goodrick.brewcontrol.sensor.CalibratedTemperatureSensor;
 import ch.goodrick.brewcontrol.sensor.SensorDS18B20;
 
 @Path("/mashing")
 public class MashingService {
-	// private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Context
 	private HttpHeaders headers;
@@ -40,8 +44,8 @@ public class MashingService {
 		MashingVO mash = new MashingVO();
 		mash.setName(Mashing.getInstance().getName());
 		mash.setTemperature(Mashing.getInstance().getCurrentTemperature());
-		if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
-			SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
+		if (Mashing.getInstance().getTemperatureSensor() instanceof CalibratedTemperatureSensor) {
+			CalibratedTemperatureSensor s = (CalibratedTemperatureSensor) Mashing.getInstance().getTemperatureSensor();
 			mash.setAltitude(s.getAltitude());
 			mash.setMeasuredTemperatureBoilingWater(s.getTempBoilingWater());
 			mash.setMeasuredTemperatureIceWater(s.getTempIceWater());
@@ -69,8 +73,8 @@ public class MashingService {
 	public Response saveName(@PathParam("name") String name, MashingVO mashing) {
 		Mashing.getInstance().setName(mashing.getName());
 
-		if (Mashing.getInstance().getTemperatureSensor() instanceof SensorDS18B20) {
-			SensorDS18B20 s = (SensorDS18B20) Mashing.getInstance().getTemperatureSensor();
+		if (Mashing.getInstance().getTemperatureSensor() instanceof CalibratedTemperatureSensor) {
+			CalibratedTemperatureSensor s = (CalibratedTemperatureSensor) Mashing.getInstance().getTemperatureSensor();
 			// TODO persist this value for the sensor id
 			s.calibrate(mashing.getMeasuredTemperatureIceWater(), mashing.getMeasuredTemperatureBoilingWater(), mashing.getAltitude());
 		}

@@ -36,4 +36,36 @@ public interface Sensor {
 	 */
 	public PhysicalQuantity getPhysicalQuantity();
 
+	/**
+	 * The temperature measured in ice water.
+	 * 
+	 * @return the temperature measured in ice water
+	 */
+	public double getTempIceWater();
+
+	/**
+	 * The temperature measured in boiling water.
+	 * 
+	 * @return the temperature measured in boiling water
+	 */
+	public double getTempBoilingWater();
+
+	/**
+	 * The altitude for the calibration measurements.
+	 * 
+	 * @return the altitude for the calibration measurements
+	 */
+	public long getAltitude();
+
+	/**
+	 * Set the calibration values.
+	 * 
+	 * @param tempIceWater
+	 *            the temperature measured in ice water
+	 * @param tempBoilingWater
+	 *            the temperature measured in boiling water
+	 * @param altitude
+	 *            the altitude for the calibration measurements
+	 */
+	public void calibrate(double tempIceWater, double tempBoilingWater, long altitude);
 }
