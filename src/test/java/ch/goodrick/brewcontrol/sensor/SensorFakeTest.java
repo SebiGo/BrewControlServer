@@ -38,4 +38,31 @@ public class SensorFakeTest {
 		assertEquals(s.getPhysicalQuantity(), PhysicalQuantity.TEMPERATURE);
 	}
 
+	@Test
+	public void testCalibration() throws IOException {
+		CalibratedTemperatureSensor s = new CalibratedTemperatureSensor() {
+			@Override
+			public Double getValue() throws IOException {
+				return getCalibratedValue(100d);
+			}
+			@Override
+			public String getID() {
+				return "internal";
+			}
+		};
+		s.calibrate(0d, 96.66d, 1000);
+		assertEquals(100d, s.getValue(), 0.1d);
+		s = new CalibratedTemperatureSensor() {
+			@Override
+			public Double getValue() throws IOException {
+				return getCalibratedValue(0d);
+			}
+			@Override
+			public String getID() {
+				return "internal";
+			}
+		};
+		s.calibrate(0d, 96.66d, 1000);
+		assertEquals(0d, s.getValue(), 0.1d);
+	}
 }

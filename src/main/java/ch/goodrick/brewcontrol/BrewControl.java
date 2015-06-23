@@ -80,10 +80,10 @@ public class BrewControl {
 
 		// pre set with some useful values
 		Mashing.getInstance().setName("BrewControl");
-		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 1, Boolean.FALSE));
+		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 0, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
 		Mashing.getInstance().addRest(new Rest("Maltoserast", 62d, 50, Boolean.TRUE));
-		Mashing.getInstance().addRest(new Rest("Verzuckerungsrast", 72d, 25, Boolean.FALSE));
+		Mashing.getInstance().addRest(new Rest("Verzuckerungsrast", 72d, 1, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Abmaischen", 78d, 1, Boolean.FALSE));
 
 		Rest start = Mashing.getInstance().getRest();
@@ -103,7 +103,7 @@ public class BrewControl {
 			break;
 		case GPIO:
 			SensorDS18B20 s1 = new SensorDS18B20();
-			s1.calibrate(0.9, 99.25, 434);
+			s1.calibrate(0.2d, 98.1d, 434);
 			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
 					new GPIOButton(RaspiPin.GPIO_01));
 			break;

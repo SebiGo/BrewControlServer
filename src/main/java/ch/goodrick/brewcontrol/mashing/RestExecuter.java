@@ -53,21 +53,16 @@ public class RestExecuter implements Runnable {
 		});
 
 		// set up temperature adjustment
+		// reduce heater to (first value) at (second value) centiDegrees before
+		// reaching rest temperature
 		// TODO move to config file
-		temperatureAdjust.put(25, 100); // power!
-		temperatureAdjust.put(15, 70); // reduce heater to 80% at 10
-										// centiDegrees before
-										// reaching rest temperature
-		temperatureAdjust.put(10, 40); // reduce heater by 75% at .5°C before
-										// reaching rest temperature
-		temperatureAdjust.put(5, 30); // reduce heater by 50% at .4°C before
-										// reaching rest temperature
-		temperatureAdjust.put(1, 20); // reduce heater by 20% at .2°C before
-										// reaching rest temperature
-		temperatureAdjust.put(0, 10); // reduce heater by 10% at .1°C before
-										// reaching rest temperature
-		temperatureAdjust.put(-1, 0); // switch off heater on or above rest
-										// temperature
+		temperatureAdjust.put(25, 100);
+		temperatureAdjust.put(15, 50);
+		temperatureAdjust.put(10, 35);
+		temperatureAdjust.put(5, 25);
+		temperatureAdjust.put(1, 20);
+		temperatureAdjust.put(0, 15);
+		temperatureAdjust.put(-1, 0);
 	}
 
 	@Override
@@ -139,7 +134,7 @@ public class RestExecuter implements Runnable {
 			rest.setState(RestState.ACTIVE);
 			log.info(rest.getName() + " is now in state " + rest.getState());
 		} else if (rest.getState().equals(RestState.ACTIVE)
-				&& (new GregorianCalendar().getTimeInMillis() - rest.getActive().getTimeInMillis()) / 1000 / 60 > rest.getDuration()) {
+				&& (new GregorianCalendar().getTimeInMillis() - rest.getActive().getTimeInMillis()) / 1000 / 60 >= rest.getDuration()) {
 			// time is up :)
 			if (rest.isContinueAutomatically()) {
 				rest.setState(RestState.COMPLETED);

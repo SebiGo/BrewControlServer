@@ -35,7 +35,7 @@ public abstract class CalibratedTemperatureSensor implements Sensor {
 	 * @return the boiling temperature
 	 */
 	private static double getExpectedBoilingTemperature(long altitude) {
-		return 100 - altitude / 300;
+		return 100 - new Double(altitude) / 300;
 	}
 
 	public void calibrate(double tempIceWater, double tempBoilingWater, long altitude) {
