@@ -50,6 +50,7 @@ public class MashingServiceTest {
 		assertEquals(mvo.getMeasuredTemperatureIceWater(), mvoOut.getMeasuredTemperatureIceWater(), 0.1d);
 		assertEquals(mvo.getAltitude(), mvoOut.getAltitude());
 		assertEquals(mvo.getName(), mvoOut.getName());
+		assertEquals(mvo.getTemperature(), mvoOut.getTemperature(), 0.01d);
 		assertEquals(Mashing.getInstance().getRest().getUuid(), mvoOut.getActiveRest());
 	}
 
