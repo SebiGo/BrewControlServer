@@ -15,6 +15,8 @@ Perform these tasks in sequence to get everything up and running:
 
 ## 1. Prepare the hardware
 
+![A sample BrewControlServer](http://sebastiangoodrick.github.io/BrewControlServer/brewcontrolserver.jpg)
+
 Before you can start using this software, you need to set up the hardware. You  need:
 * a Raspberry Pi,
 * a DS18B20 1-wire Temperature Sensor and a 4.7 kOhm resistor
