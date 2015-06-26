@@ -63,6 +63,8 @@ Install java on your Raspberry Pi.
 sudo apt-get install oracle-java8-jdk
 ```
 
+If you have a supported WiFi dongle and want to set up WiFi, follow the instructions at [the Raspberry Pi Documentation][WiFi]. This document however lacks DHCP-support which you might need. Check the [documentation from Oliver Marriott][WiFiDHCP] for more details.
+
 Reboot your Raspberry Pi
 ```
 sudo reboot
@@ -199,3 +201,5 @@ coveralls.io: [![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/B
 [raspinstall]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
 [BrewControlClient]: https://github.com/SebastianGoodrick/BrewControlClient
 [BrewControlClientDirect]: http://sebastiangoodrick.github.io/BrewControlClient/www/
+[WiFi]: https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
+[WiFiDHCP]: http://omarriott.com/aux/raspberry-pi-wifi/
