@@ -15,14 +15,14 @@ import com.pi4j.device.piface.PiFaceSwitch;
  * @author sebastian@goodrick.ch
  *
  */
-public class PiFaceButton extends AbstractButton implements Button {
+public class PiFaceButton extends Button {
 
 	/**
 	 * Constructs a software representation of a PiFace button.
 	 * 
 	 * @param piFaceSwitch
 	 *            the switch of the PiFace to use.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public PiFaceButton(PiFace piface, PiFaceSwitch piFaceSwitch) throws IOException {
 
@@ -36,7 +36,6 @@ public class PiFaceButton extends AbstractButton implements Button {
 				} else {
 					setState(ButtonState.OFF);
 				}
-				notifyListeners();
 			}
 		});
 	}

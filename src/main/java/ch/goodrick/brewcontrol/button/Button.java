@@ -1,33 +1,51 @@
 package ch.goodrick.brewcontrol.button;
 
 /**
- * The generic button interface.
+ * The abstract button class.
  * 
  * @author sebastian@goodrick.ch
  *
  */
-public interface Button {
+public abstract class Button extends ButtonListener {
+
+	private ButtonState state;
 
 	/**
 	 * On Status of the button.
 	 * 
 	 * @return true if the button is currently on (i.e. pressed)
 	 */
-	boolean isOn();
+	boolean isOn() {
+		return state == ButtonState.ON;
+	}
 
 	/**
 	 * Off Status of the button.
 	 * 
 	 * @return true if the button is currently off (i.e. not pressed)
 	 */
-	boolean isOff();
+	boolean isOff() {
+		return state == ButtonState.OFF;
+	}
 
 	/**
 	 * Get the state of the button.
 	 * 
 	 * @return ButtonStatus for the button.
 	 */
-	ButtonState getState();
+	ButtonState getState() {
+		return state;
+	}
+
+	/**
+	 * Set the state of the button.
+	 * 
+	 * @return ButtonStatus for the button.
+	 */
+	void setState(ButtonState state) {
+		this.state = state;
+		notifyListeners(state);
+	}
 
 	/**
 	 * Queries the state of the button.
@@ -36,22 +54,14 @@ public interface Button {
 	 *            the state to check the Button for.
 	 * @return true if the state equals the submitted state.
 	 */
-	boolean isState(ButtonState state);
+	boolean isState(ButtonState state) {
+		return state == this.state;
+	}
 
 	/**
-	 * Adds a button listener to the button. The Listener is called on every
-	 * state change.
-	 * 
-	 * @param listener
-	 *            the listener to be called back.
+	 * Notifies listeners of current button state.
 	 */
-	void addListener(ButtonListener... listener);
-
-	/**
-	 * Removes the listener from the button.
-	 * 
-	 * @param listener
-	 *            the listener to be removed and no longer called.
-	 */
-	void removeListener(ButtonListener... listener);
+	void notifyListeners() {
+		super.notifyListeners(state);
+	}
 }

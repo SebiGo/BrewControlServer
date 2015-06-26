@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.FakeActuator;
+import ch.goodrick.brewcontrol.common.StateChangeListenerInterface;
 import ch.goodrick.brewcontrol.common.PhysicalQuantity;
 import ch.goodrick.brewcontrol.sensor.FakeSensor;
 import ch.goodrick.brewcontrol.sensor.Sensor;
@@ -19,7 +20,7 @@ public class RestExecuterTest {
 		Actuator heater = new FakeActuator(PhysicalQuantity.TEMPERATURE);
 		Sensor sensor = new FakeSensor(heater);
 		SensorThread temperatureSensor = SensorThread.startTemperatureThread(1, sensor);
-		RestExecuter re = new RestExecuter(rest, heater, temperatureSensor, new RestStateChangeListener() {
+		RestExecuter re = new RestExecuter(rest, heater, temperatureSensor, new StateChangeListenerInterface<RestState>() {
 			@Override
 			public void onStateChangedEvent(RestState state) {
 				fail("too early!");
@@ -27,7 +28,7 @@ public class RestExecuterTest {
 		});
 		(new Thread(re)).start();
 		re.terminate();
-		//TODO can we make some assertions?
+		// TODO can we make some assertions?
 	}
 
 }

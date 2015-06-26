@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.FakeActuator;
+import ch.goodrick.brewcontrol.common.StateChangeListener;
+import ch.goodrick.brewcontrol.common.StateChangeListenerInterface;
 import ch.goodrick.brewcontrol.sensor.SensorThread;
 
 /**
@@ -20,12 +22,12 @@ import ch.goodrick.brewcontrol.sensor.SensorThread;
  * @author sebastian@goodrick.ch
  *
  */
-public class RestExecuter implements Runnable {
+public class RestExecuter extends StateChangeListener<StateChangeListenerInterface<RestState>, RestState> implements Runnable {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private final Rest rest;
 	private final Actuator heater;
 	private final SensorThread temperatureSensor;
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final HashSet<RestStateChangeListener> listener = new HashSet<RestStateChangeListener>();
 	private int timeIntervalInMS = 1000; // TODO move to config file
 	private final double tolerance = 0.3; // tolerance in °C
 	private boolean run = true;
@@ -34,7 +36,8 @@ public class RestExecuter implements Runnable {
 	// second Integer: % of heating time
 	private SortedMap<Integer, Integer> temperatureAdjust;
 
-	public RestExecuter(Rest rest, Actuator heater, SensorThread temperatureSensor, RestStateChangeListener... listener) {
+	@SafeVarargs
+	public RestExecuter(Rest rest, Actuator heater, SensorThread temperatureSensor, StateChangeListenerInterface<RestState>... listener) {
 		this.rest = rest;
 		this.heater = heater;
 		this.temperatureSensor = temperatureSensor;
@@ -67,9 +70,53 @@ public class RestExecuter implements Runnable {
 
 	@Override
 	public void run() {
+		// perform the heat cycle
+		heatCycle();
+	}
+
+	/**
+	 * This method executes a heat cycle for a rest.
+	 */
+	protected void heatCycle() {
 		log.info(rest.getName() + " is starting.");
 
 		// keep running in three states
+		heatRunnerActive();
+
+		// notify listeners that rest is over
+		notifyListeners(rest.getState());
+
+		// keep up heating while status is WAITING_COMPLETE
+		heatRunnerComplete();
+
+		// remove all listeners before finishing
+		clearListeners();
+
+		if (run) {
+			log.info("Rest " + rest.getName() + " has been finished.");
+		} else {
+			log.info("Rest " + rest.getName() + " has been forcefully terminated.");
+		}
+	}
+
+	/**
+	 * This method keeps running while the rest is in state WAITING_COMPLETE.
+	 */
+	protected void heatRunnerComplete() {
+		while (run && rest.getState().equals(RestState.WAITING_COMPLETE)) {
+			try {
+				heat();
+			} catch (InterruptedException e) {
+				log.error("Heating adjustment was interrupted!");
+			}
+		}
+	}
+
+	/**
+	 * this method keeps running while the rest is in the three states HEATING,
+	 * ACTIVE and INACTIVE.
+	 */
+	protected void heatRunnerActive() {
 		while (run && (rest.getState().equals(RestState.HEATING) || rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.INACTIVE))) {
 
 			try {
@@ -78,25 +125,6 @@ public class RestExecuter implements Runnable {
 			} catch (InterruptedException e) {
 				log.error("Heating adjustment was interrupted!");
 			}
-		}
-
-		// notify listeners that rest is over
-		notifyListeners(rest.getState());
-
-		// keep up heating while status is WAITING_COMPLETE
-		while (run && rest.getState().equals(RestState.WAITING_COMPLETE)) {
-			try {
-				heat();
-			} catch (InterruptedException e) {
-				log.error("Heating adjustment was interrupted!");
-			}
-		}
-
-		clearListeners();
-		if (run) {
-			log.info("Rest " + rest.getName() + " has been finished.");
-		} else {
-			log.info("Rest " + rest.getName() + " has been forcefully terminated.");
 		}
 	}
 
@@ -151,22 +179,7 @@ public class RestExecuter implements Runnable {
 	 * @param listener
 	 *            the listener to be notified.
 	 */
-	private void addListener(RestStateChangeListener... listener) {
-		for (RestStateChangeListener l : listener) {
-			this.listener.add(l);
-		}
-	}
 
-	private void notifyListeners(RestState state) {
-		// notify all regular listeners
-		for (RestStateChangeListener l : listener) {
-			l.onStateChangedEvent(state);
-		}
-	}
-
-	private void clearListeners() {
-		listener.clear();
-	}
 
 	public void terminate() {
 		run = false;

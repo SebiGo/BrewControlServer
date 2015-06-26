@@ -15,12 +15,12 @@ public class FakeButtonTest {
 	@Test
 	public void testWithListener() {
 		final Set<Boolean> clicked = new HashSet<Boolean>();
-		ButtonListener listener = new ButtonListener() {
-
+		ButtonChangeListener listener = new ButtonChangeListener() {
 			@Override
-			public void onStateChanged(ButtonState state) {
+			public void onStateChangedEvent(ButtonState event) {
 				clicked.add(true);
 			}
+			
 		};
 		fb.addListener(listener);
 		fb.setState(ButtonState.ON);
@@ -41,10 +41,9 @@ public class FakeButtonTest {
 	@Test
 	public void testWithoutListener() {
 		final Set<Boolean> clicked = new HashSet<Boolean>();
-		ButtonListener listener = new ButtonListener() {
-
+		ButtonChangeListener listener = new ButtonChangeListener() {
 			@Override
-			public void onStateChanged(ButtonState state) {
+			public void onStateChangedEvent(ButtonState event) {
 				clicked.add(true);
 			}
 		};

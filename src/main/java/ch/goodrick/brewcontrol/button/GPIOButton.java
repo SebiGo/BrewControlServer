@@ -18,7 +18,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * @author sebastian@goodrick.ch
  *
  */
-public class GPIOButton extends AbstractButton implements Button {
+public class GPIOButton extends Button {
 
 	/**
 	 * Constructing a software representation of an GPIO connected hardware
@@ -47,7 +47,6 @@ public class GPIOButton extends AbstractButton implements Button {
 				} else {
 					setState(ButtonState.OFF);
 				}
-				notifyListeners();
 			}
 		});
 	}

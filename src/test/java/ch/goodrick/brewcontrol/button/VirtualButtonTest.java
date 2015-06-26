@@ -13,10 +13,9 @@ public class VirtualButtonTest {
 	@Test
 	public void testWithListener() {
 		final Set<Boolean> clicked = new HashSet<Boolean>();
-		ButtonListener listener = new ButtonListener() {
-
+		ButtonChangeListener listener = new ButtonChangeListener() {
 			@Override
-			public void onStateChanged(ButtonState state) {
+			public void onStateChangedEvent(ButtonState state) {
 				clicked.add(ButtonState.ON.equals(state));
 			}
 		};
@@ -26,7 +25,6 @@ public class VirtualButtonTest {
 		assertTrue(b.isOn());
 		assertFalse(b.isOff());
 		assertEquals(b.getState(), ButtonState.ON);
-		b.notifyListeners();
 		assertTrue(clicked.contains(true));
 
 		b.off();
@@ -41,10 +39,10 @@ public class VirtualButtonTest {
 	@Test
 	public void testWithoutListener() {
 		final Set<Boolean> clicked = new HashSet<Boolean>();
-		ButtonListener listener = new ButtonListener() {
+		ButtonChangeListener listener = new ButtonChangeListener() {
 
 			@Override
-			public void onStateChanged(ButtonState state) {
+			public void onStateChangedEvent(ButtonState state) {
 				clicked.add(ButtonState.ON.equals(state));
 			}
 		};
@@ -53,7 +51,6 @@ public class VirtualButtonTest {
 		assertTrue(b.isOn());
 		assertFalse(b.isOff());
 		assertEquals(b.getState(), ButtonState.ON);
-		b.notifyListeners();
 		assertFalse(clicked.contains(true));
 		b.removeListener(listener);
 	}

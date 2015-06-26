@@ -1,8 +1,6 @@
 package ch.goodrick.brewcontrol.sensor;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +12,13 @@ import org.slf4j.LoggerFactory;
  * @author sebastian@goodrick.ch
  *
  */
-public class SensorThread implements Runnable, SensorListener {
+public class SensorThread extends TemperatureListener implements Runnable, TemperatureChangeListenerInterface {
 	private double temperature;
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private int interval;
 	private Sensor sensor;
-	private HashSet<SensorListener> listener = new HashSet<SensorListener>();
-	private HashMap<Double, HashSet<SensorListener>> listenerAbove = new HashMap<Double, HashSet<SensorListener>>();
-	private HashMap<Double, HashSet<SensorListener>> listenerBelow = new HashMap<Double, HashSet<SensorListener>>();
+	private AboveTemperatureListener listenerAbove = new AboveTemperatureListener();
+	private BelowTemperatureListener listenerBelow = new BelowTemperatureListener();
 	private boolean run = true;
 
 	/**
@@ -34,28 +31,8 @@ public class SensorThread implements Runnable, SensorListener {
 			while (run) {
 
 				Double value = sensor.getValue();
+				notify(value);
 
-				// notify all regular listeners
-				for (SensorListener l : listener) {
-					l.onSensorEvent(value);
-				}
-
-				// notify all above listeners
-				for (Double aboveValue : listenerAbove.keySet()) {
-					if (value >= aboveValue) {
-						for (SensorListener listener : listenerAbove.get(aboveValue)) {
-							listener.onSensorEvent(value);
-						}
-					}
-				}
-				// notify all below listeners
-				for (Double belowValue : listenerBelow.keySet()) {
-					if (value < belowValue) {
-						for (SensorListener listener : listenerBelow.get(belowValue)) {
-							listener.onSensorEvent(value);
-						}
-					}
-				}
 				log.debug(sensor.getID() + ": " + value + "" + sensor.getPhysicalQuantity().getUnit());
 
 				Thread.sleep(interval);
@@ -63,6 +40,13 @@ public class SensorThread implements Runnable, SensorListener {
 		} catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void notify(Double value) {
+		// notify all listeners
+		notifyListeners(value);
+		listenerAbove.notifyListeners(value);
+		listenerBelow.notifyListeners(value);
 	}
 
 	private SensorThread(int sleep, Sensor sensor) {
@@ -87,14 +71,8 @@ public class SensorThread implements Runnable, SensorListener {
 	 * @param exceedValue
 	 *            the value above which the listener gets called.
 	 */
-	public void addListenerAbove(SensorListener listener, Double exceedValue) {
-		if (listenerAbove.containsKey(exceedValue)) {
-			listenerAbove.get(exceedValue).add(listener);
-		} else {
-			HashSet<SensorListener> set = new HashSet<SensorListener>();
-			set.add(listener);
-			listenerAbove.put(exceedValue, set);
-		}
+	public void addListenerAbove(TemperatureChangeListenerInterface listener, Double exceedValue) {
+		listenerAbove.addListener(listener, exceedValue);
 	}
 
 	/**
@@ -105,48 +83,16 @@ public class SensorThread implements Runnable, SensorListener {
 	 * @param exceedValue
 	 *            the value below which the listener gets called.
 	 */
-	public void addListenerBelow(SensorListener listener, Double exceedValue) {
-		if (listenerBelow.containsKey(exceedValue)) {
-			listenerBelow.get(exceedValue).add(listener);
-		} else {
-			HashSet<SensorListener> set = new HashSet<SensorListener>();
-			set.add(listener);
-			listenerBelow.put(exceedValue, set);
-		}
-	}
-
-	/**
-	 * Add a listener to be notified on every temperature value that is produced
-	 * by the temperature thread.
-	 * 
-	 * @param listener
-	 *            the listener to be notified.
-	 */
-	public void addListener(SensorListener... listener) {
-		for (SensorListener l : listener) {
-			this.listener.add(l);
-		}
-	}
-
-	/**
-	 * Remove a listener for all permanent listeners (i.e. not above and below
-	 * values).
-	 * 
-	 * @param listener
-	 *            the listener to be removed.
-	 */
-	public void removeListener(SensorListener... listener) {
-		for (SensorListener l : listener) {
-			this.listener.remove(l);
-		}
+	public void addListenerBelow(TemperatureChangeListenerInterface listener, Double exceedValue) {
+		listenerBelow.addListener(listener, exceedValue);
 	}
 
 	/**
 	 * Delete all threshold listeners (i.e. above and below values).
 	 */
 	public void clearThresholdListener() {
-		listenerAbove = new HashMap<Double, HashSet<SensorListener>>();
-		listenerBelow = new HashMap<Double, HashSet<SensorListener>>();
+		listenerAbove.clearListener();
+		listenerBelow.clearListener();
 	}
 
 	/**
@@ -173,7 +119,7 @@ public class SensorThread implements Runnable, SensorListener {
 	}
 
 	@Override
-	public void onSensorEvent(Double value) {
+	public void onStateChangedEvent(Double value) {
 		temperature = value;
 	}
 

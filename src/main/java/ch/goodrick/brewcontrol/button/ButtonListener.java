@@ -1,11 +1,7 @@
 package ch.goodrick.brewcontrol.button;
 
-/**
- * The listener interface for the callbacks.
- * 
- * @author sebastian@goodrick.ch
- *
- */
-public interface ButtonListener {
-	void onStateChanged(ButtonState state);
+import ch.goodrick.brewcontrol.common.StateChangeListener;
+
+public class ButtonListener extends StateChangeListener<ButtonChangeListener, ButtonState> {
+		
 }

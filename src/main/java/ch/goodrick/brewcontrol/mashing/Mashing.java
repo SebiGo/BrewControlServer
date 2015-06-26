@@ -9,13 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.button.Button;
-import ch.goodrick.brewcontrol.button.ButtonListener;
+import ch.goodrick.brewcontrol.button.ButtonChangeListener;
 import ch.goodrick.brewcontrol.button.ButtonState;
 import ch.goodrick.brewcontrol.button.VirtualButton;
+import ch.goodrick.brewcontrol.common.StateChangeListenerInterface;
 import ch.goodrick.brewcontrol.logger.RRD;
 import ch.goodrick.brewcontrol.sensor.Sensor;
-import ch.goodrick.brewcontrol.sensor.SensorListener;
 import ch.goodrick.brewcontrol.sensor.SensorThread;
+import ch.goodrick.brewcontrol.sensor.TemperatureChangeListenerInterface;
 
 /**
  * This is the central class for the mashing process. It executes rests and
@@ -137,9 +138,9 @@ public class Mashing {
 		// start temperatureThread & log temperatures
 		tempThread = SensorThread.startTemperatureThread(1000, getTemperatureSensor());
 		tempLogger = new RRD(name, getTemperatureSensor().getPhysicalQuantity());
-		tempThread.addListener(new SensorListener() {
+		tempThread.addListener(new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				tempLogger.log(value);
 				setCurrentTemperature(value);
 			}
@@ -196,7 +197,8 @@ public class Mashing {
 		}
 
 		// execute the rest
-		RestExecuter re = new RestExecuter(rest, heater, tempThread, new RestStateChangeListener() {
+		RestExecuter re = new RestExecuter(rest, heater, tempThread, new StateChangeListenerInterface<RestState>() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onStateChangedEvent(RestState state) {
 				if (state.equals(RestState.WAITING_COMPLETE)) {
@@ -208,10 +210,9 @@ public class Mashing {
 					myButtons[buttons.length] = virtualButton;
 					final Button[] fButtons = myButtons;
 					for (Button b : fButtons) {
-						b.addListener(new ButtonListener() {
-
+						b.addListener(new ButtonChangeListener() {
 							@Override
-							public void onStateChanged(ButtonState state) {
+							public void onStateChangedEvent(ButtonState state) {
 								// if one of the buttons was
 								// pressed, remove all button
 								// listeners.
@@ -221,6 +222,7 @@ public class Mashing {
 								rest.setState(RestState.COMPLETED);
 								executeRest(rest.getNextRest(), heater, buttons);
 							}
+
 						});
 					}
 				} else if (state.equals(RestState.COMPLETED)) {

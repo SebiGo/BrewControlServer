@@ -7,7 +7,7 @@ package ch.goodrick.brewcontrol.button;
  * @author sebastian@goodrick.ch
  *
  */
-public class VirtualButton extends AbstractButton implements Button {
+public class VirtualButton extends Button {
 
 	/**
 	 * Triggers a click on a button (i.e. a fast on and off).
@@ -22,7 +22,6 @@ public class VirtualButton extends AbstractButton implements Button {
 	 */
 	public void on() {
 		setState(ButtonState.ON);
-		notifyListeners();
 	}
 
 	/**
@@ -30,6 +29,5 @@ public class VirtualButton extends AbstractButton implements Button {
 	 */
 	public void off() {
 		setState(ButtonState.OFF);
-		notifyListeners();
 	}
 }

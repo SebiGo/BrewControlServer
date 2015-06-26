@@ -24,41 +24,41 @@ public class SensorThreadTest {
 		final Set<Double> checkAboveListener = new HashSet<Double>();
 		final Set<Double> checkBelowListener = new HashSet<Double>();
 		SensorThread st = SensorThread.startTemperatureThread(1, new FakeSensor(a));
-		SensorListener sl = new SensorListener() {
+		TemperatureChangeListenerInterface sl = new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				checkListener.add(value);
 			}
 		};
 		st.addListener(sl);
-		st.addListenerAbove(new SensorListener() {
+		st.addListenerAbove(new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				checkAboveListener.add(value);
 			}
 		}, temperature);
-		st.addListenerAbove(new SensorListener() {
+		st.addListenerAbove(new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				checkAboveListener.add(value);
 			}
 		}, temperature);
-		st.addListenerBelow(new SensorListener() {
+		st.addListenerBelow(new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				checkBelowListener.add(value);
 			}
 		}, Double.MAX_VALUE);
-		st.addListenerBelow(new SensorListener() {
+		st.addListenerBelow(new TemperatureChangeListenerInterface() {
 			@Override
-			public void onSensorEvent(Double value) {
+			public void onStateChangedEvent(Double value) {
 				checkBelowListener.add(value);
 			}
 		}, Double.MAX_VALUE);
 		Thread.sleep(2);
 		assertTrue(temperature <= checkListener.iterator().next());
 		assertTrue(temperature <= checkAboveListener.iterator().next());
-		assertTrue(temperature <= checkBelowListener.iterator().next());
+		assertTrue(checkBelowListener.size() == 0);
 		st.removeListener(sl);
 		st.clearThresholdListener();
 		checkListener.clear();

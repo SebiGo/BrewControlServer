@@ -8,5 +8,6 @@ package ch.goodrick.brewcontrol.button;
  * @author sebastian@goodrick.ch
  *
  */
-public class FakeButton extends AbstractButton implements Button {
+@Deprecated
+public class FakeButton extends Button {
 }
