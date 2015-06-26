@@ -51,6 +51,12 @@ public class SensorThreadTest {
 				checkAboveListener.add(value);
 			}
 		}, Double.MAX_VALUE);
+		st.addListenerAbove(new TemperatureChangeListenerInterface() {
+			@Override
+			public void onStateChangedEvent(Double value) {
+				checkAboveListener.add(value);
+			}
+		}, Double.MAX_VALUE);
 		st.addListenerBelow(new TemperatureChangeListenerInterface() {
 			@Override
 			public void onStateChangedEvent(Double value) {
