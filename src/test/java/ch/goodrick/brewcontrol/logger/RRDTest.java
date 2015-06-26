@@ -47,7 +47,7 @@ public class RRDTest {
 	@Test
 	public void getNonEmptyFile() throws IOException, InterruptedException {
 		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
-		Thread.sleep(1100);
+		Thread.sleep(2000);
 		rrd.log(1d);
 		assertEquals(new File("test.png"), rrd.getGraph());
 	}
