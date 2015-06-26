@@ -17,9 +17,9 @@ public class BelowTemperatureListener extends ParameterisedTemperatureListener {
 	 */
 	@Override
 	public void notifyListeners(Double value) {
-		for (Double aboveValue : getListeners().keySet()) {
-			if (value >= aboveValue) {
-				for (TemperatureChangeListenerInterface listener : getListeners().get(aboveValue)) {
+		for (Double belowValue : getListeners().keySet()) {
+			if (value >= belowValue) {
+				for (TemperatureChangeListenerInterface listener : getListeners().get(belowValue)) {
 					listener.onStateChangedEvent(value);
 				}
 			}

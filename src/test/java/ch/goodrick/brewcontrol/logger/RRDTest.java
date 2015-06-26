@@ -2,6 +2,7 @@ package ch.goodrick.brewcontrol.logger;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -41,5 +42,13 @@ public class RRDTest {
 	public void getGraphException() throws IOException {
 		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
 		rrd.getGraph();
+	}
+
+	@Test
+	public void getNonEmptyFile() throws IOException, InterruptedException {
+		RRD rrd = new RRD("test", PhysicalQuantity.TEMPERATURE);
+		Thread.sleep(1000);
+		rrd.log(1d);
+		assertEquals(new File("test.png"), rrd.getGraph());
 	}
 }
