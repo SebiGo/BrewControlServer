@@ -44,6 +44,7 @@ public class MashingService {
 		MashingVO mash = new MashingVO();
 		mash.setName(Mashing.getInstance().getName());
 		mash.setTemperature(Mashing.getInstance().getCurrentTemperature());
+		mash.setHysteresis(Mashing.getInstance().getHysteresis());
 		if (Mashing.getInstance().getTemperatureSensor() instanceof CalibratedTemperatureSensor) {
 			CalibratedTemperatureSensor s = (CalibratedTemperatureSensor) Mashing.getInstance().getTemperatureSensor();
 			mash.setAltitude(s.getAltitude());

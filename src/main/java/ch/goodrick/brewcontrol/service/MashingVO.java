@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "mashing", namespace = "http://www.goodrick.ch")
 @XmlType(name = "mashing", namespace = "http://www.goodrick.ch", propOrder = { "name", "temperature", "activeRest", "altitude", "measuredTemperatureIceWater",
-		"measuredTemperatureBoilingWater" })
+		"measuredTemperatureBoilingWater", "hysteresis" })
 public class MashingVO {
 	private String name;
 	private double temperature;
@@ -15,6 +15,7 @@ public class MashingVO {
 	private long altitude;
 	private double measuredTemperatureIceWater;
 	private double measuredTemperatureBoilingWater;
+	private double hysteresis;
 
 	public long getAltitude() {
 		return altitude;
@@ -62,6 +63,14 @@ public class MashingVO {
 
 	public void setTemperature(double temperature) {
 		this.temperature = temperature;
+	}
+
+	public double getHysteresis() {
+		return hysteresis;
+	}
+
+	public void setHysteresis(double hysteresis) {
+		this.hysteresis = hysteresis;
 	}
 
 }
