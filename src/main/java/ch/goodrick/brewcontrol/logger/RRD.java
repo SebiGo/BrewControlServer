@@ -38,7 +38,7 @@ public class RRD implements Logger {
 			logIntoRRD(rrdDb, value);
 			generateGraph(rrdDb);
 			rrdDb.close();
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException e) {
 			log.warn("Could not write sample to RRD.", e);
 			e.printStackTrace();
 		}

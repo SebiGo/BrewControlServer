@@ -3,6 +3,7 @@ package ch.goodrick.brewcontrol.sensor;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class SensorThreadTest {
 			public Double getValue() throws IOException {
 				return 25d;
 			}
+
 			@Override
 			public String getID() {
 				return "local";
@@ -70,8 +72,7 @@ public class SensorThreadTest {
 			}
 		}, Double.MAX_VALUE);
 		Thread.sleep(1000);
-		assertTrue(fs.getValue() <= checkListener.iterator().next());
-		System.out.println("size "+checkAboveListener.size()+" - "+checkBelowListener.size());
+		assertTrue(checkListener.size() > 0);
 		assertTrue(checkBelowListener.size() > 0);
 		assertTrue(checkBelowListener.size() > 0);
 		st.removeListener(sl);

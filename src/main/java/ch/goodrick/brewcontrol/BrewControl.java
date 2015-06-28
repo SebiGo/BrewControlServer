@@ -30,6 +30,7 @@ import ch.goodrick.brewcontrol.mashing.Mashing;
 import ch.goodrick.brewcontrol.mashing.Rest;
 import ch.goodrick.brewcontrol.sensor.FakeSensor;
 import ch.goodrick.brewcontrol.sensor.SensorDS18B20;
+import ch.goodrick.brewcontrol.service.InfoService;
 import ch.goodrick.brewcontrol.service.MashingService;
 import ch.goodrick.brewcontrol.service.RestService;
 
@@ -134,7 +135,7 @@ public class BrewControl {
 		providers.add(jsonProvider);
 
 		JAXRSServerFactoryBean factoryBean = new JAXRSServerFactoryBean();
-		factoryBean.setResourceClasses(RestService.class, MashingService.class);
+		factoryBean.setResourceClasses(RestService.class, MashingService.class, InfoService.class);
 		factoryBean.setBindingId(JAXRSBindingFactory.JAXRS_BINDING_ID);
 		factoryBean.setAddress("http://" + getNetworkAddress() + ":8080/");
 		factoryBean.setProviders(providers);

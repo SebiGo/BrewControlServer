@@ -6,9 +6,20 @@
 	<artifactId>brewcontrol</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
-	<name>BrewControl</name>
-	<url>http://www.goodrick.ch</url>
+	<developers>
+		<developer>
+			<name>Sebastian Goodrick</name>
+			<email>sebastian@goodrick.ch</email>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Dianne Goodrick</name>
+			<email>dianne@goodrick.ch</email>
+		</contributor>
+	</contributors>
+	<name>BrewControlServer</name>
+	<url>http://github.com/SebastianGoodrick/BrewControlServer</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -65,6 +76,8 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<mainClass>ch.goodrick.brewcontrol.BrewControl</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 						<manifestEntries>
 							<mode>development</mode>

@@ -41,6 +41,15 @@ public class Mashing {
 	private Button[] buttons;
 	private SensorThread tempThread;
 	private List<RestExecuter> threads = new Vector<RestExecuter>();
+	private Double hysteresis = -0.01d;
+
+	public Double getHysteresis() {
+		return hysteresis;
+	}
+
+	public void setHysteresis(Double hysteresis) {
+		this.hysteresis = hysteresis;
+	}
 
 	public double getCurrentTemperature() {
 		return currentTemperature;
@@ -198,7 +207,6 @@ public class Mashing {
 
 		// execute the rest
 		RestExecuter re = new RestExecuter(rest, heater, tempThread, new StateChangeListenerInterface<RestState>() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onStateChangedEvent(RestState state) {
 				if (state.equals(RestState.WAITING_COMPLETE)) {
