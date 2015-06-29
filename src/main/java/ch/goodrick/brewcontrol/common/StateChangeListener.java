@@ -1,10 +1,11 @@
 package ch.goodrick.brewcontrol.common;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
- * This class implements a generic state change listener controller. 
+ * This class implements a generic state change listener controller.
  * 
  * @author sebastian@goodrick.ch
  *
@@ -38,8 +39,12 @@ public abstract class StateChangeListener<E extends StateChangeListenerInterface
 	 */
 	public void notifyListeners(F event) {
 		// notify all regular listeners
-		for (E l : listener) {
-			l.onStateChangedEvent(event);
+		for (Iterator<E> iterator = listener.iterator(); iterator.hasNext();) {
+			try {
+				iterator.next().onStateChangedEvent(event);
+			} catch (NullPointerException e) {
+				// we will receive a null pointer if someone removed the listeners, no need to worry about it.
+			}
 		}
 	}
 
