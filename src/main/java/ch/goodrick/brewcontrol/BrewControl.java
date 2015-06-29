@@ -104,16 +104,14 @@ public class BrewControl {
 			break;
 		case GPIO:
 			SensorDS18B20 s1 = new SensorDS18B20();
-			s1.calibrate(0.2d, 98.1d, 434);
-			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
-					new GPIOButton(RaspiPin.GPIO_01));
+			s1.calibrate(0, 100, 0);
+			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(), new GPIOButton(RaspiPin.GPIO_01));
 			break;
 		case PIFACE:
 			final PiFace piface = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
 			SensorDS18B20 s2 = new SensorDS18B20();
-			s2.calibrate(0.9, 99.25, 434);
-			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE), new VirtualButton(),
-					new PiFaceButton(piface, PiFaceSwitch.S1));
+			s2.calibrate(0, 100, 0);
+			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE), new VirtualButton(), new PiFaceButton(piface, PiFaceSwitch.S1));
 			break;
 		}
 	}
@@ -147,7 +145,7 @@ public class BrewControl {
 	 * Jettison server to.
 	 * 
 	 * @return
-	 * @throws SocketException 
+	 * @throws SocketException
 	 */
 	private static String getNetworkAddress() throws SocketException {
 		Enumeration<NetworkInterface> nics;
