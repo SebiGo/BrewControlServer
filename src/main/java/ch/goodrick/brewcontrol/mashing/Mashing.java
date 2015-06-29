@@ -143,6 +143,7 @@ public class Mashing {
 		setTemperatureSensor(sensor);
 		this.actuator = actuator;
 		this.buttons = buttons;
+		registerStartButton(buttons);
 
 		// start temperatureThread & log temperatures
 		tempThread = SensorThread.startTemperatureThread(1000, getTemperatureSensor());
@@ -201,7 +202,7 @@ public class Mashing {
 		// stop executing after last rest
 		if (rest == null) {
 			active = false;
-			threads.clear();
+			reset();
 			return;
 		}
 
@@ -210,21 +211,17 @@ public class Mashing {
 			@Override
 			public void onStateChangedEvent(RestState state) {
 				if (state.equals(RestState.WAITING_COMPLETE)) {
-					// wait for buttons to be pressed, do some
-					// "button magic" (nice word for bad code)
-					// and enable listeners on the buttons
-					Button[] myButtons = new Button[buttons.length + 1];
+					final Button[] myButtons = new Button[buttons.length + 1];
 					System.arraycopy(buttons, 0, myButtons, 0, buttons.length);
 					myButtons[buttons.length] = virtualButton;
-					final Button[] fButtons = myButtons;
-					for (Button b : fButtons) {
+					for (final Button b : myButtons) {
 						b.addListener(new ButtonChangeListener() {
 							@Override
 							public void onStateChangedEvent(ButtonState state) {
 								// if one of the buttons was
 								// pressed, remove all button
 								// listeners.
-								for (Button b : fButtons) {
+								for (Button b : myButtons) {
 									b.removeListener(this);
 								}
 								rest.setState(RestState.COMPLETED);
@@ -285,5 +282,45 @@ public class Mashing {
 			}
 		}
 		active = false;
+	}
+
+	/**
+	 * Register callback listener for starting the mashing process when a button
+	 * is pressed.
+	 * 
+	 * @param buttons
+	 */
+	private void registerStartButton(Button... buttons) {
+		for (final Button button : buttons) {
+			button.addListener(new ButtonChangeListener() {
+				@Override
+				public void onStateChangedEvent(ButtonState state) {
+					try {
+						button.removeListener(this);
+						startMashing();
+					} catch (MashingException e) {
+						log.warn("Could not start mashing with button click.");
+					}
+				}
+			});
+		}
+	}
+
+	/**
+	 * Reset all relevant Mashing variables.
+	 */
+	private void reset() {
+		threads.clear();
+		Rest rest = getFirstRest();
+		while (rest != null) {
+			rest.setState(RestState.INACTIVE);
+			rest = rest.getNextRest();
+		}
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			log.warn("Thread was interrupted.");
+		}
+		registerStartButton(buttons);
 	}
 }

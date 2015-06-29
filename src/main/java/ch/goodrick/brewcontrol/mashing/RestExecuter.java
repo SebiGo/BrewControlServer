@@ -120,7 +120,8 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 			try {
 				// measure deltaT 7°C before rest temperature unless difference
 				// is less than 10°C
-				if (Mashing.getInstance().getHysteresis() < 0 && rest.getTemperature() - startTemperature > 10 && temperatureSensor.getTemperature() > rest.getTemperature() - 7d) {
+				if (Mashing.getInstance().getHysteresis() < 0 && rest.getTemperature() - startTemperature > 10
+						&& temperatureSensor.getTemperature() > rest.getTemperature() - 7d) {
 					log.info("Measuring hysteresis.");
 					Mashing.getInstance().setHysteresis(hysteresis());
 					log.info("Measuring finished, hysteresis is " + Mashing.getInstance().getHysteresis() + "°C.");
@@ -220,12 +221,8 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 	}
 
 	/**
-	 * Add a listener to be notified on every rest state change.
-	 * 
-	 * @param listener
-	 *            the listener to be notified.
+	 * Terminate the current rest
 	 */
-
 	public void terminate() {
 		run = false;
 	}
