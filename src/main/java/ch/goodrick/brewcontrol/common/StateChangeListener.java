@@ -1,7 +1,6 @@
 package ch.goodrick.brewcontrol.common;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -39,17 +38,19 @@ public abstract class StateChangeListener<E extends StateChangeListenerInterface
 	 */
 	public void notifyListeners(F event) {
 		// notify all regular listeners
-		for (Iterator<E> iterator = listener.iterator(); iterator.hasNext();) {
-			try {
-				iterator.next().onStateChangedEvent(event);
-			} catch (NullPointerException e) {
-				// we will receive a null pointer if someone removed the listeners, no need to worry about it.
-			}
+
+		// Avoid ConcurrentModificationException, copy to Array
+		@SuppressWarnings("unchecked")
+		E[] myListenerArray = (E[]) listener.toArray();
+
+		for (E listener : myListenerArray) {
+			listener.onStateChangedEvent(event);
 		}
 	}
 
 	/**
-	 * Remove a certain listener
+	 * Remove a certain listener. Note: You will still get notified of any
+	 * events that occurred before removing the listener.
 	 * 
 	 * @param listener
 	 *            the listener to be removed.
