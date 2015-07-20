@@ -15,8 +15,7 @@ import ch.goodrick.brewcontrol.common.StateChangeListenerInterface;
 import ch.goodrick.brewcontrol.sensor.SensorThread;
 
 /**
- * This class executes a rest i.e. heats up to the expected temperature and
- * waits for the defined time.
+ * This class executes a rest i.e. heats up to the expected temperature and waits for the defined time.
  * 
  * @author sebastian@goodrick.ch
  *
@@ -110,34 +109,33 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 	}
 
 	/**
-	 * this method keeps running while the rest is in the three states HEATING,
-	 * ACTIVE and INACTIVE.
+	 * this method keeps running while the rest is in the three states HEATING, ACTIVE and INACTIVE.
 	 */
 	protected void heatRunnerActive() {
 		Double startTemperature = temperatureSensor.getTemperature();
-		boolean deltaTWasExecuted = (rest.getTemperature() - startTemperature < 10);
+
+		// set hysteresisWasExecuted to true if temperature gap too low
+		boolean hysteresisWasExecuted = (rest.getTemperature() - startTemperature < 8d);
+
 		while (run && (rest.getState().equals(RestState.HEATING) || rest.getState().equals(RestState.ACTIVE) || rest.getState().equals(RestState.INACTIVE))) {
 			try {
-				// measure deltaT 7°C before rest temperature unless difference
-				// is less than 10°C
-				if (Mashing.getInstance().getHysteresis() < 0 && rest.getTemperature() - startTemperature > 10
-						&& temperatureSensor.getTemperature() > rest.getTemperature() - 7d) {
+				// measure deltaT 6°C before rest temperature unless difference is less than 8°C
+				if (Mashing.getInstance().getHysteresis() < 0 && !hysteresisWasExecuted && temperatureSensor.getTemperature() > rest.getTemperature() - 6d) {
 					log.info("Measuring hysteresis.");
 					Mashing.getInstance().setHysteresis(hysteresis());
 					log.info("Measuring finished, hysteresis is " + Mashing.getInstance().getHysteresis() + "°C.");
 				}
 
 				// Switch off if we reached rest temperature less deltaT.
-				if (!deltaTWasExecuted && temperatureSensor.getTemperature() > rest.getTemperature() - Mashing.getInstance().getHysteresis()) {
+				if (!hysteresisWasExecuted && temperatureSensor.getTemperature() > rest.getTemperature() - Mashing.getInstance().getHysteresis()) {
 					log.info("Switching off heater since we will reach rest temperature according to hysteresis measurement.");
-					deltaTWasExecuted = true;
-					// use the hysteresis method and update the hysteresis value
-					// while we're at it.
+					hysteresisWasExecuted = true;
+					// use the hysteresis method and update the hysteresis value while we're at it.
 					Mashing.getInstance().setHysteresis(hysteresis());
-					log.info("Start pulsing heater.");
+					log.info("Start pulsing heater (hysteresis was " + Mashing.getInstance().getHysteresis() + "°C).");
 				}
 				setStatus();
-				heat(deltaTWasExecuted);
+				heat(hysteresisWasExecuted);
 			} catch (InterruptedException e) {
 				log.error("Heating adjustment was interrupted!");
 			}
@@ -145,8 +143,7 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 	}
 
 	/**
-	 * this method switches off the heater and measures how much the temperature
-	 * increases "deltaT".
+	 * this method switches off the heater and measures how much the temperature increases "deltaT".
 	 * 
 	 * @return how much temperature is added once the heater is switched off.
 	 * @throws InterruptedException
@@ -159,8 +156,8 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 		// readings
 		Thread.sleep(timeIntervalInMS * 10);
 		while (true) {
-			if (temperatureSensor.getTemperature() <= temperature) {
-				// we've reached the peak, return result.
+			if (temperatureSensor.getTemperature() < temperature) {
+				// we've passed the peak, return result.
 				return temperature - initialTemperature;
 			}
 			temperature = temperatureSensor.getTemperature();
@@ -171,9 +168,9 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 	/**
 	 * Switch on heater for a percentage of the given time
 	 */
-	private void heat(boolean deltaTWasExecuted) throws InterruptedException {
-		// just heat if deltaT was not yet executed.
-		if (!deltaTWasExecuted) {
+	private void heat(boolean hysteresisWasExecuted) throws InterruptedException {
+		// just heat if hysteresis was not yet executed.
+		if (!hysteresisWasExecuted) {
 			heater.on();
 			Thread.sleep(timeIntervalInMS);
 			return;
@@ -203,11 +200,11 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 		if (rest.getState().equals(RestState.INACTIVE)) {
 			// set status to heating
 			rest.setState(RestState.HEATING);
-			log.info(rest.getName() + " is now in state " + rest.getState());
-		} else if (rest.getState().equals(RestState.HEATING) && temperatureSensor.getTemperature() >= (rest.getTemperature() - tolerance)) {
+		}
+		// perform the next check, since we may continue to active if we're above rest temperature already.
+		if (rest.getState().equals(RestState.HEATING) && temperatureSensor.getTemperature() >= (rest.getTemperature() - tolerance)) {
 			// set status to active
 			rest.setState(RestState.ACTIVE);
-			log.info(rest.getName() + " is now in state " + rest.getState());
 		} else if (rest.getState().equals(RestState.ACTIVE)
 				&& (new GregorianCalendar().getTimeInMillis() - rest.getActive().getTimeInMillis()) / 1000 / 60 >= rest.getDuration()) {
 			// time is up :)
@@ -216,8 +213,8 @@ public class RestExecuter extends StateChangeListener<StateChangeListenerInterfa
 			} else {
 				rest.setState(RestState.WAITING_COMPLETE);
 			}
-			log.info(rest.getName() + " is now in state " + rest.getState());
 		}
+		log.info(rest.getName() + " is now in state " + rest.getState());
 	}
 
 	/**
