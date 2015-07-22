@@ -36,15 +36,15 @@ public abstract class StateChangeListener<E extends StateChangeListenerInterface
 	 * @param event
 	 *            the event
 	 */
+	@SuppressWarnings("unchecked")
 	public void notifyListeners(F event) {
 		// notify all regular listeners
 
 		// Avoid ConcurrentModificationException, copy to Array
-		@SuppressWarnings("unchecked")
-		E[] myListenerArray = (E[]) listener.toArray();
+		Object[] myListenerArray = listener.toArray();
 
-		for (E listener : myListenerArray) {
-			listener.onStateChangedEvent(event);
+		for (Object listener : myListenerArray) {
+			((E)listener).onStateChangedEvent(event);
 		}
 	}
 
