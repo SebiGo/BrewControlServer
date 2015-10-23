@@ -70,17 +70,16 @@ Reboot your Raspberry Pi
 sudo reboot
 ```
 
-## 3. Compile or download the server
+## 3. Download or compile the server
 
 Download the binary and copy it to your Raspberry Pi
 ```
 ssh pi@raspberrypi
 wget http://sebigo.github.io/BrewControlServer/target/brewcontrol-0.1.2-SNAPSHOT-executable.jar
 mv brewcontrol-0.1.2-SNAPSHOT-executable.jar brewcontrol.jar
-
 ```
 
-Optionally, you can build the package yourself. You need a machine with Git, Java and Maven in your PATH environment.
+*Optionally*, you can build the package yourself. You need a machine with Git, Java and Maven in your PATH environment.
 ```
 git clone git@github.com:SebiGo/BrewControlServer.git
 cd BrewControlServer
