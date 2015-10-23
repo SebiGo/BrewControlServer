@@ -15,7 +15,7 @@ Perform these tasks in sequence to get everything up and running:
 
 ## 1. Prepare the hardware
 
-![A sample BrewControlServer](http://sebastiangoodrick.github.io/BrewControlServer/brewcontrolserver.jpg)
+![A sample BrewControlServer](http://sebigo.github.io/BrewControlServer/brewcontrolserver.jpg)
 
 Before you can start using this software, you need to set up the hardware. You  need:
 * a Raspberry Pi,
@@ -74,7 +74,7 @@ sudo reboot
 
 Download the source and change into that directory to build.
 ```
-git clone git@github.com:SebastianGoodrick/BrewControlServer.git
+git clone git@github.com:SebiGo/BrewControlServer.git
 cd BrewControlServer
 mvn package
 scp target/brewcontrol-0.1.2-SNAPSHOT-executable.jar pi@raspberrypi:~/brewcontrol.jar
@@ -188,18 +188,18 @@ update-rc.d brewcontrol defaults
 Please use [GitHub Issues][issues] for bugs and feature requests.
 
 # Continuous integration and code coverage 
-Travis CI: [![Build Status](https://travis-ci.org/SebastianGoodrick/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebastianGoodrick/BrewControlServer)
+Travis CI: [![Build Status](https://travis-ci.org/SebiGo/BrewControlServer.svg?branch=master)](https://travis-ci.org/SebiGo/BrewControlServer)
 
-coveralls.io: [![Coverage Status](https://coveralls.io/repos/SebastianGoodrick/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebastianGoodrick/BrewControlServer?branch=master)
+coveralls.io: [![Coverage Status](https://coveralls.io/repos/SebiGo/BrewControlServer/badge.svg?branch=master)](https://coveralls.io/r/SebiGo/BrewControlServer?branch=master)
 
 
 [raspberry]: http://raspberrypi.org
 [pi4j]: http://pi4j.com/pins/model-b-rev2.html
 [pi4jsudo]: http://pi4j.com/faq.html#permissions
-[issues]: https://github.com/SebastianGoodrick/BrewControlServer/issues
+[issues]: https://github.com/SebiGo/BrewControlServer/issues
 [raspbian]: https://www.raspberrypi.org/downloads/
 [raspinstall]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
-[BrewControlClient]: https://github.com/SebastianGoodrick/BrewControlClient
-[BrewControlClientDirect]: http://sebastiangoodrick.github.io/BrewControlClient/www/
+[BrewControlClient]: https://github.com/SebiGo/BrewControlClient
+[BrewControlClientDirect]: http://sebigo.github.io/BrewControlClient/www/
 [WiFi]: https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
 [WiFiDHCP]: http://omarriott.com/aux/raspberry-pi-wifi/
