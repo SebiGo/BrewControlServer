@@ -8,7 +8,7 @@ Perform these tasks in sequence to get everything up and running:
 
 1. [Prepare the hardware](#1-prepare-the-hardware)
 2. [Prepare the operating system](#2-prepare-the-operating-system)
-3. [Compile or download the server](#3-compile-or-download-the-server)
+3. [Download or compile the server](#3-download-or-compile-the-server)
 4. [Launch the server](#4-launch-the-server)
 5. [Launch the server automatically (optional)](#5-launch-the-server-automatically)
 6. [Launch the client](#6-launch-the-client)
