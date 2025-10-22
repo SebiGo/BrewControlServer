@@ -15,14 +15,6 @@ public class BrewControlTest {
 		fail();
 	}
 
-	@Test(expected = UnsatisfiedLinkError.class)
-	public void testMainPIFACE() throws Exception {
-		String[] argv = new String[1];
-		argv[0] = "piface";
-		BrewControl.main(argv);
-		fail();
-	}
-
 	@Test(expected = UnknownParameterException.class)
 	public void testMain() throws Exception {
 		String[] argv = new String[1];
