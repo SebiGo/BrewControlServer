@@ -3,19 +3,73 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.goodrick</groupId>
   <artifactId>brewcontrol</artifactId>
-  <name>brewcontrol</name>
-  <version>0.0.1-SNAPSHOT</version>
-  <url>http://www.goodrick.ch</url>
+  <name>BrewControlServer</name>
+  <version>0.1.2-SNAPSHOT</version>
+  <url>http://github.com/SebastianGoodrick/BrewControlServer</url>
+  <developers>
+    <developer>
+      <name>Sebastian Goodrick</name>
+      <email>sebastian@goodrick.ch</email>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Dianne Goodrick</name>
+      <email>dianne@goodrick.ch</email>
+    </contributor>
+  </contributors>
   <build>
     <plugins>
       <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.14</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.3.0</version>
+        <configuration>
+          <repoToken>2EzFbDsbWH7HhNy7Tn1ObqIH1SvujgMLK</repoToken>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.1</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.4</version>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.4.2</version>
         <configuration>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>ch.goodrick.brewcontrol.BrewControl</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
             <manifestEntries>
               <mode>development</mode>
@@ -25,16 +79,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -46,7 +92,35 @@
                 <transformer>
                   <mainClass>ch.goodrick.brewcontrol.BrewControl</mainClass>
                 </transformer>
+                <transformer />
+                <transformer>
+                  <resource>META-INF/cxf/bus-extensions.txt</resource>
+                </transformer>
+                <transformer>
+                  <resource>META-INF/cxf/bus-extensions.xml</resource>
+                </transformer>
               </transformers>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>executable</shadedClassifierName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                </requireJavaVersion>
+              </rules>
             </configuration>
           </execution>
         </executions>
@@ -62,6 +136,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.0</version>
             <executions>
               <execution>
                 <phase>test</phase>
@@ -82,12 +157,23 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <junit4.version>4.13.2</junit4.version>
+    <rrd4j.version>3.9</rrd4j.version>
+    <slf4j.version>2.0.17</slf4j.version>
+    <cxf.version>3.5.11</cxf.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <pi4j.v1.version>1.4</pi4j.v1.version>
   </properties>
 </project>
-

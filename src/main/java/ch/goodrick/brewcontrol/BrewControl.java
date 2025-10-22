@@ -114,10 +114,10 @@ public class BrewControl {
 		JAXRSServerFactoryBean factoryBean = new JAXRSServerFactoryBean();
 		factoryBean.setResourceClasses(RestService.class, MashingService.class, InfoService.class);
 		factoryBean.setBindingId(JAXRSBindingFactory.JAXRS_BINDING_ID);
-		factoryBean.setAddress("http://" + getNetworkAddress() + ":8532/");
+		factoryBean.setAddress("http://" + getNetworkAddress() + ":8080/");
 		factoryBean.setProviders(providers);
 		factoryBean.create();
-		log.info("REST services started at http://{}:8532/", getNetworkAddress());
+		log.info("REST services started at http://{}:8080/", getNetworkAddress());
 	}
 
 	/**
