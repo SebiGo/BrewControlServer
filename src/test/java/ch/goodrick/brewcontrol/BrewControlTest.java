@@ -2,12 +2,13 @@ package ch.goodrick.brewcontrol;
 
 import static org.junit.Assert.fail;
 
-import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.junit.Test;
+
+import com.pi4j.io.exception.IOAlreadyExistsException;
 
 public class BrewControlTest {
 
-	@Test(expected = ServiceConstructionException.class)
+	@Test(expected = IOAlreadyExistsException.class)
 	public void testMainGPIO() throws Exception {
 		String[] argv = new String[1];
 		argv[0] = "gpio";
