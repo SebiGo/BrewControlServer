@@ -18,11 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.goodrick.brewcontrol.actuator.Actuator;
 import ch.goodrick.brewcontrol.actuator.FakeActuator;
-import ch.goodrick.brewcontrol.actuator.GPIOActuator;
-import ch.goodrick.brewcontrol.actuator.PiFaceRelayActuator;
+import ch.goodrick.brewcontrol.actuator.GPIOActuator; // Pi4J v2-basierte Implementierung
 import ch.goodrick.brewcontrol.button.FakeButton;
-import ch.goodrick.brewcontrol.button.GPIOButton;
-import ch.goodrick.brewcontrol.button.PiFaceButton;
+import ch.goodrick.brewcontrol.button.GPIOButton; // Pi4J v2-basierte Implementierung
 import ch.goodrick.brewcontrol.button.VirtualButton;
 import ch.goodrick.brewcontrol.common.OperationMode;
 import ch.goodrick.brewcontrol.common.PhysicalQuantity;
@@ -34,52 +32,33 @@ import ch.goodrick.brewcontrol.service.InfoService;
 import ch.goodrick.brewcontrol.service.MashingService;
 import ch.goodrick.brewcontrol.service.RestService;
 
-import com.pi4j.device.piface.PiFace;
-import com.pi4j.device.piface.PiFaceRelay;
-import com.pi4j.device.piface.PiFaceSwitch;
-import com.pi4j.device.piface.impl.PiFaceDevice;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.spi.SpiChannel;
-
-// TODO 3 websocket & client side rendering
-// TODO 3 UI detect if server is present at all
-// TODO 9 config file for parameters
-// TODO 9 save/load recipe
-// TODO 9 actuator for motor
-
 /**
- * This is the main code for the BrewControl software. It contains the static
- * main method to launch the program.
- * 
- * @author sebastian@goodrick.ch
+ * Main-Klasse für BrewControl. Startet Rest-Services und initialisiert Mashing
+ * je nach Modus.
  *
+ * Autor: sebastian@goodrick.ch
  */
 public class BrewControl {
 	static Logger log = LoggerFactory.getLogger(BrewControl.class);
 
 	/**
-	 * The main method for BrewCrontol intended to start the standalone
-	 * BrewControl server
-	 * 
-	 * @param argv
-	 *            no arguments required, leave empty
-	 * @throws Exception
+	 * @param argv genau ein Argument: Betriebsmodus
 	 */
 	public static void main(String[] argv) throws Exception {
 		OperationMode opMode = null;
 
 		if (argv.length != 1) {
-			String modes = "";
+			StringBuilder modes = new StringBuilder();
 			for (OperationMode mode : OperationMode.values()) {
-				modes += mode.getCommandlineOption() + "|";
+				modes.append(mode.getCommandlineOption()).append('|');
 			}
-			log.error("Please supply mode [" + modes.substring(0, modes.length() - 1) + "]");
+			log.error("Please supply mode [{}]", modes.substring(0, modes.length() - 1));
 			return;
 		} else {
 			opMode = OperationMode.getModeFromCommandlineOption(argv[0]);
 		}
 
-		// pre set with some useful values
+		// Beispiel-Rasten vorbelegen
 		Mashing.getInstance().setName("BrewControl");
 		Mashing.getInstance().addRest(new Rest("Einmaischen", 57d, 0, Boolean.FALSE));
 		Mashing.getInstance().addRest(new Rest("Eiweissrast", 55d, 15, Boolean.TRUE));
@@ -88,46 +67,46 @@ public class BrewControl {
 		Mashing.getInstance().addRest(new Rest("Abmaischen", 78d, 1, Boolean.FALSE));
 
 		Rest start = Mashing.getInstance().getRest();
-
 		while (start != null) {
-			log.info(start.getName() + " at " + start.getTemperature() + "" + PhysicalQuantity.TEMPERATURE.getUnit() + " for " + (start.getDuration())
-					+ " min (" + ((start.isContinueAutomatically()) ? "" : "don't ") + "continue automatically).");
+			log.info("{} at {}{} for {} min ({}continue automatically).", start.getName(), start.getTemperature(),
+					PhysicalQuantity.TEMPERATURE.getUnit(), start.getDuration(),
+					(start.isContinueAutomatically()) ? "" : "don't ");
 			start = start.getNextRest();
 		}
 
 		startServices();
 
 		switch (opMode) {
-		case SIMULATE:
+		case SIMULATE: {
 			Actuator a = new FakeActuator(PhysicalQuantity.TEMPERATURE);
 			Mashing.getInstance().initMashing(new FakeSensor(a), a, new FakeButton(), new VirtualButton());
 			break;
-		case GPIO:
+		}
+		case GPIO: {
+			// DS18B20-Temperatursensor nutzen
 			SensorDS18B20 s1 = new SensorDS18B20();
 			s1.calibrate(0, 100, 0);
-			Mashing.getInstance().initMashing(s1, new GPIOActuator(RaspiPin.GPIO_04, PhysicalQuantity.TEMPERATURE), new VirtualButton(), new GPIOButton(RaspiPin.GPIO_01));
+
+			// Pi4J v2: BCM-Nummern verwenden (z.B. 4 == GPIO4)
+			int heaterBcmPin = 4; // vorher RaspiPin.GPIO_04
+			int buttonBcmPin = 1; // vorher RaspiPin.GPIO_01 (BCM1 = SDA1)
+
+			GPIOActuator actuator = new GPIOActuator(heaterBcmPin, PhysicalQuantity.TEMPERATURE);
+			GPIOButton hwButton = new GPIOButton(buttonBcmPin);
+
+			Mashing.getInstance().initMashing(s1, actuator, new VirtualButton(), hwButton);
 			break;
-		case PIFACE:
-			final PiFace piface = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
-			SensorDS18B20 s2 = new SensorDS18B20();
-			s2.calibrate(0, 100, 0);
-			Mashing.getInstance().initMashing(s2, new PiFaceRelayActuator(piface, PiFaceRelay.K0, PhysicalQuantity.TEMPERATURE), new VirtualButton(), new PiFaceButton(piface, PiFaceSwitch.S1));
-			break;
+		}
 		}
 	}
 
 	/**
-	 * Helper method to start all rest services on a Jettison server as supplied
-	 * by the Apache cxf libraries.
-	 * 
-	 * @throws Exception
+	 * Startet die REST-Services via Apache CXF (JAX-RS).
 	 */
-	private static void startServices() throws Exception {
-		List<JSONProvider> providers = new ArrayList<JSONProvider>();
-		JSONProvider jsonProvider = new JSONProvider();
-		// jsonProvider.setSerializeAsArray(false);
-		// jsonProvider.setConvertTypesToStrings(true);
-		Map<String, String> map = new HashMap<String, String>();
+	private static void startServices() {
+		List<JSONProvider<?>> providers = new ArrayList<>();
+		JSONProvider<?> jsonProvider = new JSONProvider<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("http://www.goodrick.ch", "brewcontrol");
 		jsonProvider.setNamespaceMap(map);
 		providers.add(jsonProvider);
@@ -135,32 +114,31 @@ public class BrewControl {
 		JAXRSServerFactoryBean factoryBean = new JAXRSServerFactoryBean();
 		factoryBean.setResourceClasses(RestService.class, MashingService.class, InfoService.class);
 		factoryBean.setBindingId(JAXRSBindingFactory.JAXRS_BINDING_ID);
-		factoryBean.setAddress("http://" + getNetworkAddress() + ":8080/");
+		factoryBean.setAddress("http://" + getNetworkAddress() + ":8532/");
 		factoryBean.setProviders(providers);
 		factoryBean.create();
+		log.info("REST services started at http://{}:8532/", getNetworkAddress());
 	}
 
 	/**
-	 * Retrieve an external network address for this server to connect the
-	 * Jettison server to.
-	 * 
-	 * @return
-	 * @throws SocketException
+	 * Ermittelt eine externe IPv4-Adresse für das lokale System.
 	 */
-	private static String getNetworkAddress() throws SocketException {
-		Enumeration<NetworkInterface> nics;
-		nics = NetworkInterface.getNetworkInterfaces();
-		while (nics.hasMoreElements()) {
-			NetworkInterface nic = (NetworkInterface) nics.nextElement();
-			Enumeration<InetAddress> addresses = nic.getInetAddresses();
-			while (addresses.hasMoreElements()) {
-				InetAddress address = (InetAddress) addresses.nextElement();
-				if (!address.isLinkLocalAddress() && address instanceof Inet4Address) {
-					return address.getHostAddress();
+	private static String getNetworkAddress() {
+		try {
+			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
+			while (nics.hasMoreElements()) {
+				NetworkInterface nic = nics.nextElement();
+				Enumeration<InetAddress> addresses = nic.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress address = addresses.nextElement();
+					if (!address.isLinkLocalAddress() && address instanceof Inet4Address) {
+						return address.getHostAddress();
+					}
 				}
 			}
+		} catch (SocketException e) {
+			log.warn("Could not enumerate network interfaces", e);
 		}
 		return "localhost";
 	}
-
 }

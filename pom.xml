@@ -235,18 +235,17 @@
       <version>${slf4j.version}</version>
     </dependency>
 
-    <!-- Raspberry Pi (v1 API beibehalten, letzte 1.x) -->
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-core</artifactId>
-      <version>${pi4j.v1.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-device</artifactId>
-      <version>1.0</version>
-    </dependency>
-
+  <dependency>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-core</artifactId>
+    <version>2.5.1</version>
+  </dependency>
+  <dependency>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-plugin-raspberrypi</artifactId>
+    <version>2.5.1</version>
+  </dependency>
+  
     <!-- RRD4J (Java 8+, behebt NIO-Probleme) -->
     <dependency>
       <groupId>org.rrd4j</groupId>

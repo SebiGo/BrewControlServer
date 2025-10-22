@@ -1,53 +1,72 @@
 package ch.goodrick.brewcontrol.button;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.pi4j.Pi4J;
+import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalInputConfig;
+import com.pi4j.io.gpio.digital.DigitalState;
+import com.pi4j.io.gpio.digital.PullResistance;
 
 /**
- * A representation of a Raspberry Pi GPIO pin connected button. Please make
- * sure you select a GPIO Pin that is available (e.g. not configured as an SPI
- * channel). The button needs to be connected between the GPIO pin you use for
- * initialising the object and 3.3V (Pin 1 on RaspberryPi Model B).
- * 
- * @author sebastian@goodrick.ch
- *
+ * Raspberry Pi GPIO button using Pi4J v2 (BCM numbering). Button connected
+ * between GPIO (e.g., BCM 4) and 3.3V, internal pull-down enabled.
  */
 public class GPIOButton extends Button {
 
-	/**
-	 * Constructing a software representation of an GPIO connected hardware
-	 * button.
-	 * 
-	 * @param pin
-	 *            the GPIO pin that the button is connected to.
-	 */
-	public GPIOButton(Pin pin) {
-		// create gpio controller
-		final GpioController gpio = GpioFactory.getInstance();
+	private static final Logger log = LoggerFactory.getLogger(GPIOButton.class);
 
-		// provision gpio pin as an input pin with its internal pull down
-		// resistor enabled
-		final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_DOWN);
+	// Shared Pi4J context (auto-detects Raspberry Pi)
+	private static final Context PI4J = Pi4J.newAutoContext();
 
-		// register an anonymous listener with the pi4j library to connect to
-		// our internal listeners.
-		myButton.addListener(new GpioPinListenerDigital() {
-
-			@Override
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				event.getState();
-				if (event.getState() == PinState.HIGH) {
-					setState(ButtonState.ON);
-				} else {
-					setState(ButtonState.OFF);
-				}
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				log.info("Shutting down Pi4J context (GPIOButton)...");
+				PI4J.shutdown();
+			} catch (Exception e) {
+				log.warn("Pi4J shutdown hook failed (GPIOButton)", e);
 			}
+		}, "pi4j-shutdown-gpiobutton"));
+	}
+
+	private final DigitalInput buttonInput;
+
+	/**
+	 * @param bcmPin BCM pin number (e.g., 4 for GPIO4)
+	 */
+	public GPIOButton(int bcmPin) {
+		DigitalInputConfig config = DigitalInput.newConfigBuilder(PI4J).id("button-" + bcmPin)
+				.name("GPIO Button " + bcmPin).address(bcmPin) // BCM numbering
+				.pull(PullResistance.PULL_DOWN) // HIGH when pressed
+				.debounce(5_000L) // ~5 ms (µs in Pi4J 2)
+				// .provider("raspberrypi-digital-input") // optional; auto-selected
+				.build();
+
+		this.buttonInput = PI4J.create(config);
+
+		// initial state
+		updateStateFrom(buttonInput.state());
+
+		// event listener
+		buttonInput.addListener(event -> {
+			DigitalState state = event.state();
+			log.debug("GPIOButton event on BCM {} -> {}", bcmPin, state);
+			updateStateFrom(state);
 		});
+
+		log.info("Created GPIOButton on BCM {}", bcmPin);
+	}
+
+	private void updateStateFrom(DigitalState state) {
+		if (state == null)
+			return;
+		if (state.isHigh()) {
+			setState(ButtonState.ON);
+		} else {
+			setState(ButtonState.OFF);
+		}
 	}
 }
