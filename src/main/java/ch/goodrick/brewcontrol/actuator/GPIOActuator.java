@@ -49,7 +49,7 @@ public class GPIOActuator extends AbstractActuator implements Actuator {
 				.address(bcmPin) // BCM numbering
 				.initial(DigitalState.LOW) // start safe/off
 				.shutdown(DigitalState.LOW) // ensure off on shutdown
-				.provider("raspberrypi-digital-output") // from pi4j-plugin-raspberrypi
+				.provider("gpiod-digital-output") // from pi4j-plugin-raspberrypi
 				.build();
 
 		this.relay = PI4J.create(config);

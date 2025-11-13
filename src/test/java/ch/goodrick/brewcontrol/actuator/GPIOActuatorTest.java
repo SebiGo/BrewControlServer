@@ -33,7 +33,7 @@ public class GPIOActuatorTest {
 		// Run only on a Raspberry Pi
 		Assume.assumeTrue("Not running on a Raspberry Pi; skipping construct test.", isRaspberryPi());
 
-		GPIOActuator gpioa = new GPIOActuator(4, PhysicalQuantity.TEMPERATURE);
+		GPIOActuator gpioa = new GPIOActuator(23, PhysicalQuantity.TEMPERATURE);
 		// simple smoke: switch off safely
 		gpioa.off();
 	}
@@ -44,7 +44,7 @@ public class GPIOActuatorTest {
 		Assume.assumeFalse("Running on a Raspberry Pi; skipping failure test.", isRaspberryPi());
 
 		try {
-			new GPIOActuator(4, PhysicalQuantity.TEMPERATURE);
+			new GPIOActuator(23, PhysicalQuantity.TEMPERATURE);
 			fail("Creating GPIOActuator off-Pi should throw due to missing GPIO provider");
 		} catch (Throwable expected) {
 			// OK: Pi4J v2 will throw a runtime exception when no Raspberry Pi provider is

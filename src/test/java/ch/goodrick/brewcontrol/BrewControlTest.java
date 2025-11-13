@@ -8,13 +8,13 @@ import com.pi4j.io.exception.IOAlreadyExistsException;
 
 public class BrewControlTest {
 
-//	@Test(expected = IOAlreadyExistsException.class)
-//	public void testMainGPIO() throws Exception {
-//		String[] argv = new String[1];
-//		argv[0] = "gpio";
-//		BrewControl.main(argv);
-//		fail();
-//	}
+	@Test(expected = IOAlreadyExistsException.class)
+	public void testMainGPIO() throws Exception {
+		String[] argv = new String[1];
+		argv[0] = "gpio";
+		BrewControl.main(argv);
+		fail();
+	}
 
 	@Test(expected = UnknownParameterException.class)
 	public void testMain() throws Exception {

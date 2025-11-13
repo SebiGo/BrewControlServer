@@ -30,8 +30,8 @@ public class GPIOButtonTest {
 		// Run only on Raspberry Pi hardware
 		Assume.assumeTrue("Not running on a Raspberry Pi; skipping construct test.", isRaspberryPi());
 
-		// BCM 4 (GPIO4) as a safe default input with internal pull-down
-		new GPIOButton(4);
+		// BCM 24 (GPIO4) as a safe default input with internal pull-down
+		new GPIOButton(24);
 	}
 
 	@Test
