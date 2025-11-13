@@ -88,8 +88,8 @@ public class BrewControl {
 			s1.calibrate(0, 100, 0);
 
 			// Pi4J v2: BCM-Nummern verwenden (z.B. 4 == GPIO4)
-			int heaterBcmPin = 4; // vorher RaspiPin.GPIO_04
-			int buttonBcmPin = 1; // vorher RaspiPin.GPIO_01 (BCM1 = SDA1)
+			int heaterBcmPin = 23; // vorher RaspiPin.GPIO_04
+			int buttonBcmPin = 24; // vorher RaspiPin.GPIO_01 (BCM1 = SDA1)
 
 			GPIOActuator actuator = new GPIOActuator(heaterBcmPin, PhysicalQuantity.TEMPERATURE);
 			GPIOButton hwButton = new GPIOButton(buttonBcmPin);
